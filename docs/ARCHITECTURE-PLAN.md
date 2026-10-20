@@ -848,3 +848,4 @@ Nothing here claims lower CPU, Neural Engine use or fanless operation.
 | Concurrent Voice Qwen or ASR use | Contention | Documented as unsupported in v1; generic coordination channel later |
 | A copied Voice file is later fixed in Voice | Silent divergence | `provenance-check.py` flags it; the fix is ported by hand with a provenance note |
 | `AVAudioFile` does not write ALAC as expected | Recording format change | M4 first check; fall back to 48 kHz Int16 CAF (about 350 MB per hour per track) |
+| SwiftPM 6.4's build system stamps the deployment target as the SDK version, and Apple Translation then reports installed language packs as `supported`/not installed (found in M1c) | Apple Translation silently unavailable in any executable built that way | `TranslateCheck` carries an explicit linker `-platform_version` and checks its own stamp (`BuildStamp`); the packaged app's stamp is a release check |

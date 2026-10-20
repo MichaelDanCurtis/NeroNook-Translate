@@ -1,0 +1,28 @@
+{
+  "repository": "mlx-community/nemotron-3.5-asr-streaming-0.6b-8bit",
+  "revision": "7279359e4481b5e9e185a318bd618e429c6d86cd",
+  "license": "other",
+  "pinnedAt": "2026-06-05T06:01:24.000Z",
+  "files": [
+    {
+      "name": "config.json",
+      "bytes": 159605,
+      "sha256": "f30c7bc469fc01fd5483172b4d7c75075030ddb60f347589c44e216b0a5ea9b6"
+    },
+    {
+      "name": "model.safetensors",
+      "bytes": 755598923,
+      "sha256": "a64a4da048e7d28dde4cd4ff61ce59308a63314bb5563e73e06c24aae50ea941"
+    },
+    {
+      "name": "tokenizer.model",
+      "bytes": 406554,
+      "sha256": "ce3895e40806f02a26c3a225161b96ef682d6c0054bae32a245dec4258d7d291"
+    },
+    {
+      "name": "vocab.txt",
+      "bytes": 78294,
+      "sha256": "d74b60edd1cad792cfce25dcb7e1048d78d717cf4f29acaae2854262d5189f4f"
+    }
+  ]
+}

@@ -42,7 +42,9 @@ def main():
         header, payload = message
         kind, rid = header.get('type'), header.get('id', '')
         if kind == 'shutdown': return
-        if kind == 'ping': write({'type': 'pong', 'id': rid})
+        if kind == 'ping':
+            if mode == 'slowping': time.sleep(1.5)
+            write({'type': 'pong', 'id': rid})
         elif kind == 'stats': write({'type': 'stats', 'id': rid, 'residentBytes': 12345, 'activeBytes': 1, 'peakBytes': 2, 'cacheBytes': 3})
         elif kind == 'cancel': cancelled.add(rid)
         elif kind == 'prepareVoice':

@@ -1,0 +1,37 @@
+{
+  "generatedAt": "2026-10-20T20:51:44Z",
+  "how": "TranslateCheck --prepare-model <backend> (--asr-helper TranslateASR or --engine TranslateEngine) --model <prefix>: one unsandboxed load; the pinned mlx-audio-swift runtime writes tokenizer.json from vocab.json and merges.txt",
+  "runtime": "mlx-audio-swift 01dec7c9bdce3088a6b6b7ab9f2e403458195efb",
+  "files": [
+    {
+      "folder": "Qwen3-ASR-0.6B-4bit-313d850181767edf09f00a9c289becca70e58cd0",
+      "name": "tokenizer.json",
+      "bytes": 4760339,
+      "sha256": "60870952194864fc4efaddf483bf0a31f97ecac237d46793a228e7389244bd67"
+    },
+    {
+      "folder": "Qwen3-ASR-1.7B-8bit-a8379a2e2f9e313c9292cdf1af4055ab56d50d55",
+      "name": "tokenizer.json",
+      "bytes": 4760339,
+      "sha256": "3662786ada9fcec22f209860a6e8ceb766d9ec888cca2c935f52f2d1be0b8d62"
+    },
+    {
+      "folder": "Qwen3-ForcedAligner-0.6B-4bit-2f652af86ae0c73fe189b9429225c908ce4bf020",
+      "name": "tokenizer.json",
+      "bytes": 4760462,
+      "sha256": "8aaaadf7b6c1a6022399e88d7f8948dd76faae2319765901da9640d4193f2f7d"
+    },
+    {
+      "folder": "Qwen3-TTS-12Hz-0.6B-Base-8bit-50f45ef0047cde7e84c2ef04326acb8ada2436a7",
+      "name": "tokenizer.json",
+      "bytes": 4762740,
+      "sha256": "8463616eed49edab371e6a31c52c99098a292c4a5c8e2ee2b9cb3f77f3511b97"
+    },
+    {
+      "folder": "Qwen3-TTS-12Hz-1.7B-Base-bf16-a6eb4f68e4b056f1215157bb696209bc82a6db48",
+      "name": "tokenizer.json",
+      "bytes": 4762740,
+      "sha256": "6af636d74f4514fbc3574370572de16618516ffa02367eb9f9f55906d5b355be"
+    }
+  ]
+}

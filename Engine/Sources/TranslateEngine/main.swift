@@ -1,9 +1,14 @@
 import Darwin
+import EngineProtocol
 import Foundation
 import MLX
 import MLXAudioCore
+import HuggingFace
 import MLXAudioTTS
+import MLXHuggingFace
+import MLXLLM
 import MLXLMCommon
+import Tokenizers
 
 // TranslateEngine: one resident Qwen3-TTS Base model, one prepared reference conditioning per voice
 // slot, one generation at a time. Requests arrive as frames on stdin; replies leave on a private
@@ -64,6 +69,7 @@ struct Limits {
     static let maxAudioSeconds = 180.0
     static let maxTokens = 1800
     static let languages: Set<String> = ["English", "Chinese", "Japanese", "Korean", "German", "French", "Russian", "Portuguese", "Spanish", "Italian"]
+    static let translationLanguages = ["en": "English", "es": "Spanish", "zh": "Chinese", "English": "English", "Spanish": "Spanish", "Chinese": "Chinese"]
 }
 
 // MARK: - Startup
@@ -81,6 +87,13 @@ do {
     let config = try JSONSerialization.jsonObject(with: configData) as? [String: Any]
     guard config?["tts_model_type"] as? String == "base" else { throw EngineProblem("TranslateEngine needs a Qwen3-TTS Base checkpoint.") }
     model = try await Qwen3TTSModel.fromModelDirectory(modelDirectory)
+    // `--prepare`: a one-time, unsandboxed load so the library can write the tokenizer.json it derives from
+    // vocab.json and merges.txt next to a checkpoint that ships without one; the sandbox keeps model folders
+    // read-only at runtime (docs/PROTOCOL.md).
+    if arguments.contains("--prepare") {
+        FileHandle.standardError.write(Data("prepared tts at \(modelDirectory.lastPathComponent)\n".utf8))
+        exit(0)
+    }
     MLX.Memory.cacheLimit = 128 * 1024 * 1024
 } catch {
     sendError(nil, "Model load failed: \(error)")
@@ -132,6 +145,7 @@ nonisolated(unsafe) var conditionings: [String: Qwen3TTSModel.Qwen3TTSReferenceC
 // array's address can be reused by the next one, which would silently hand a new voice the previous
 // voice's context. Keeping every slot's reference array alive makes identities unique for the process.
 nonisolated(unsafe) var references: [String: MLXArray] = [:]
+nonisolated(unsafe) var retiredReferences: [MLXArray] = []   // arrays of failed preparations, for the same reason
 
 func prepareVoice(_ message: Frame.Message) {
     let id = message.header["id"] as? String
@@ -148,10 +162,16 @@ func prepareVoice(_ message: Frame.Message) {
         }
         let started = now()
         let audio = MLXArray(samples)
-        let conditioning = try model.prepareReferenceConditioning(refAudio: audio, refText: transcript, language: language)
-        if let embedding = conditioning.speakerEmbedding { eval(embedding, conditioning.referenceSpeechCodes, conditioning.referenceTextTokenIDs) }
-        else { eval(conditioning.referenceSpeechCodes, conditioning.referenceTextTokenIDs) }
-        guard conditioning.codecLanguageID != nil else { throw EngineProblem("The checkpoint has no language id for \(language).") }
+        let conditioning: Qwen3TTSModel.Qwen3TTSReferenceConditioning
+        do {
+            conditioning = try model.prepareReferenceConditioning(refAudio: audio, refText: transcript, language: language)
+            if let embedding = conditioning.speakerEmbedding { eval(embedding, conditioning.referenceSpeechCodes, conditioning.referenceTextTokenIDs) }
+            else { eval(conditioning.referenceSpeechCodes, conditioning.referenceTextTokenIDs) }
+            guard conditioning.codecLanguageID != nil else { throw EngineProblem("The checkpoint has no language id for \(language).") }
+        } catch {
+            retiredReferences.append(audio)
+            throw error
+        }
         conditionings[slot] = conditioning
         references[slot] = audio
         send(["type": "voiceReady", "id": id ?? "", "slot": slot, "seconds": seconds, "prepareMs": milliseconds(since: started),
@@ -216,10 +236,62 @@ func synthesize(_ message: Frame.Message) async {
     }
 }
 
+// MARK: - Translation (a Qwen text model; shares this executor with synthesis, plan §2.4)
+
+nonisolated(unsafe) var translator: ModelContainer?
+
+func loadTranslator(_ message: Frame.Message) async {
+    let id = message.header["id"] as? String
+    do {
+        guard let path = message.header["model"] as? String else { throw EngineProblem("loadTranslator needs a model directory.") }
+        let started = now()
+        // Local directory only: the hub client never contacts the network for a `.directory` configuration.
+        translator = try await #huggingFaceLoadModelContainer(configuration: ModelConfiguration(directory: URL(fileURLWithPath: path)))
+        send(["type": "translatorReady", "id": id ?? "", "loadMs": milliseconds(since: started), "residentBytes": residentBytes()])
+    } catch { sendError(id, "loadTranslator failed: \(error)") }
+}
+
+func translate(_ message: Frame.Message) async {
+    let id = message.header["id"] as? String
+    do {
+        guard let translator else { throw EngineProblem("The translator is not loaded.") }
+        guard let text = message.header["text"] as? String, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, text.utf8.count <= Limits.maxTextBytes,
+              let target = message.header["target"] as? String, let targetName = Limits.translationLanguages[target] else { throw EngineProblem("translate needs text and a supported target.") }
+        let sourceName = (message.header["source"] as? String).flatMap { Limits.translationLanguages[$0] }
+        let context = ((message.header["context"] as? [String]) ?? []).suffix(3).filter { !$0.isEmpty && $0.utf8.count <= Limits.maxTextBytes }
+        let glossary = ((message.header["glossary"] as? [String]) ?? []).prefix(32).filter { !$0.isEmpty && $0.utf8.count <= 80 }
+        var instructions = "You are a professional interpreter. Translate the user's sentence" + (sourceName.map { " from \($0)" } ?? "") + " into \(targetName)."
+        instructions += " Keep names, numbers, dates, negations and self-corrections exactly as spoken. Output only the translation, with no explanation."
+        if !glossary.isEmpty { instructions += " Keep these names and terms as given: " + glossary.joined(separator: ", ") + "." }
+        var prompt = ""
+        if !context.isEmpty { prompt += "Previous sentences, for context only, do not translate them:\n" + context.joined(separator: "\n") + "\n\nSentence to translate:\n" }
+        prompt += text
+        let parameters = GenerateParameters(maxTokens: 384, temperature: 0, topP: 1, topK: 1, repetitionPenalty: 1.05)
+        let session = ChatSession(translator, instructions: instructions, generateParameters: parameters, additionalContext: ["enable_thinking": false])
+        let started = now()
+        var firstTokenMs: Int?
+        var output = ""
+        var chunks = 0
+        for try await chunk in session.streamResponse(to: prompt) {
+            if firstTokenMs == nil { firstTokenMs = milliseconds(since: started) }
+            output += chunk
+            chunks += 1
+            guard output.utf8.count <= 8192, now() - started < 60 else { throw EngineProblem("Translation ran too long.") }
+        }
+        // Defensive: drop any reasoning block a chat model might still emit.
+        if let close = output.range(of: "</think>") { output = String(output[close.upperBound...]) }
+        let cleaned = output.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !cleaned.isEmpty, cleaned.utf8.count <= 4096 else { throw EngineProblem("Empty or oversized translation.") }
+        send(["type": "translation", "id": id ?? "", "text": cleaned, "firstTokenMs": firstTokenMs ?? -1, "generationMs": milliseconds(since: started), "chunks": chunks])
+    } catch { sendError(id, "translate failed: \(error)") }
+}
+
 for await message in queue {
     switch message.type {
     case "prepareVoice": prepareVoice(message)
     case "synthesize": await synthesize(message)
+    case "loadTranslator": await loadTranslator(message)
+    case "translate": await translate(message)
     case "ping": send(["type": "pong", "id": message.header["id"] as? String ?? ""])
     default: sendError(message.header["id"] as? String, "Unknown request type.")
     }

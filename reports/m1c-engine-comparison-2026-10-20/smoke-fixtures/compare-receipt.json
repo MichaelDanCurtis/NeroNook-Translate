@@ -1,0 +1,1911 @@
+{
+  "build" : {
+    "gitHead" : "5e0eb89 (plus uncommitted changes unless the receipt says otherwise)",
+    "sdkStamp" : "27.0"
+  },
+  "corpus" : "fixtures (synthetic voices; plumbing check only)",
+  "date" : "2026-10-20T21:32:32Z",
+  "items" : [
+    "fixture\/generic-en",
+    "fixture\/local-en",
+    "fixture\/remote-es"
+  ],
+  "load" : {
+    "paced" : {
+      "audioSeconds" : 306.9,
+      "errors" : 0,
+      "generationMs" : 92511,
+      "meanFirstAudioMs" : 153,
+      "realTimeFactor" : 0.301,
+      "stoppedEarly" : false,
+      "syntheses" : 52
+    },
+    "recognition" : {
+      "audioSeconds" : 5.8,
+      "errors" : 0,
+      "generationMs" : 4617,
+      "meanFirstAudioMs" : 2665,
+      "realTimeFactor" : 0.791,
+      "stoppedEarly" : false,
+      "syntheses" : 1
+    },
+    "translation" : {
+      "audioSeconds" : 47.4,
+      "errors" : 0,
+      "generationMs" : 14793,
+      "meanFirstAudioMs" : 158,
+      "realTimeFactor" : 0.312,
+      "stoppedEarly" : false,
+      "syntheses" : 8
+    }
+  },
+  "machine" : "Mac16,5",
+  "models" : {
+    "engine tts" : "Qwen3-TTS-12Hz-1.7B-Base-8bit-e7dd0585652209fa0d7783659aad4e8a324de11c",
+    "hy-mt2-1.8b-4bit" : "\/Volumes\/Main External\/Development\/NeroNook-Voice\/build\/interpreter-models\/translator",
+    "nemotron" : "nemotron-3.5-asr-streaming-0.6b-8bit-7279359e4481b5e9e185a318bd618e429c6d86cd",
+    "qwen3.5-2b" : "Qwen3.5-2B-4bit-674aaa7240b91e8012fcad5d791b7dfe5ba90207",
+    "qwen3asr-0.6b" : "Qwen3-ASR-0.6B-4bit-313d850181767edf09f00a9c289becca70e58cd0",
+    "qwen3asr-1.7b" : "Qwen3-ASR-1.7B-8bit-a8379a2e2f9e313c9292cdf1af4055ab56d50d55"
+  },
+  "notes" : [
+    "Scoring tokens: lowercase, compatibility mapping, punctuation removed; number words folded to digits where the grammar allows (two numbers in a row stay separate), Chinese numerals folded, percent, currency and minus kept as tokens, and then every digit scored as one token, so '10:30', '1030' and 'ten thirty' agree. The error rate is therefore a token error rate (characters for Mandarin), and a wrong number costs one error per digit.",
+    "Checks pass when an accepted form appears inside the stretch of the transcript aligned with the check's reference sentence (edit-distance alignment, a few tokens of slack); checks without a sentence number search the whole transcript.",
+    "The '+context' recognizers and the translators' glossary receive the scripted names themselves, an oracle list: the best case for a participant list, not a prediction of one.",
+    "Recognition rows run the complete recording in phrase mode. Paced rows feed energy-gated phrases in real time (coverage = fraction of the recording fed) and measure delays from the nominal phrase end; phrase-mode engines also re-run the growing phrase every 1.0 s.",
+    "Translation rows translate the reference text, not recognizer output, so translation quality is isolated; meaning is rated by people from the review sheet.",
+    "Under-load rows were measured while Qwen TTS synthesized continuously in the engine; the load table reports that synthesis. The Qwen text translator shares the engine process and its one-request-at-a-time executor, so its under-load delay is queueing behind the synthesis unit in progress."
+  ],
+  "paced" : [
+    {
+      "audioSeconds" : 8.37,
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "coverage" : 0.98,
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 29
+      },
+      "item" : "fixture\/generic-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "maxFinalDelayMs" : 72,
+      "meanFinalDelayMs" : 72,
+      "meanPartialDelayMs" : 1160,
+      "p90FinalDelayMs" : 72,
+      "phrases" : [
+        {
+          "finalDelayMs" : 72,
+          "index" : 1,
+          "partialDelayMs" : 1160,
+          "seconds" : 8.24,
+          "startSeconds" : 0,
+          "text" : "Thanks for joining the call today.  Before we start, let me quickly go over what we covered last week and what still needs a decision from both of us."
+        }
+      ],
+      "recognizer" : "nemotron",
+      "residentBytesAfter" : 913391616,
+      "underLoad" : false
+    },
+    {
+      "audioSeconds" : 7.85,
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "coverage" : 0.97,
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 27
+      },
+      "item" : "fixture\/local-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "maxFinalDelayMs" : 53,
+      "meanFinalDelayMs" : 53,
+      "meanPartialDelayMs" : 1186,
+      "p90FinalDelayMs" : 53,
+      "phrases" : [
+        {
+          "finalDelayMs" : 53,
+          "index" : 1,
+          "partialDelayMs" : 1186,
+          "seconds" : 7.6,
+          "startSeconds" : 0,
+          "text" : "I think the simplest plan is to confirm the delivery date first, then we can talk about the budget and who is responsible for each part."
+        }
+      ],
+      "recognizer" : "nemotron",
+      "residentBytesAfter" : 913604608,
+      "underLoad" : false
+    },
+    {
+      "audioSeconds" : 8.57,
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "coverage" : 0.99,
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 30
+      },
+      "item" : "fixture\/remote-es",
+      "kind" : "fixture",
+      "language" : "es",
+      "maxFinalDelayMs" : 33,
+      "meanFinalDelayMs" : 33,
+      "meanPartialDelayMs" : 1180,
+      "p90FinalDelayMs" : 33,
+      "phrases" : [
+        {
+          "finalDelayMs" : 33,
+          "index" : 1,
+          "partialDelayMs" : 1180,
+          "seconds" : 8.48,
+          "startSeconds" : 0,
+          "text" : "Gracias por unirte a la llamada de hoy, antes de empezar, déjame repasar rápidamente lo que vimos la semana pasada y lo que todavía necesita una decisión de los dos."
+        }
+      ],
+      "recognizer" : "nemotron",
+      "residentBytesAfter" : 913571840,
+      "underLoad" : false
+    },
+    {
+      "audioSeconds" : 8.37,
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "coverage" : 0.98,
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 29
+      },
+      "item" : "fixture\/generic-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "maxFinalDelayMs" : 312,
+      "meanFinalDelayMs" : 312,
+      "meanPartialDelayMs" : 1145,
+      "p90FinalDelayMs" : 312,
+      "phrases" : [
+        {
+          "finalDelayMs" : 312,
+          "index" : 1,
+          "partialDelayMs" : 1145,
+          "prefixRunMaxMs" : 162,
+          "prefixRunMeanMs" : 113,
+          "seconds" : 8.24,
+          "startSeconds" : 0,
+          "text" : "Thanks for joining the call today. Before we start, let me quickly go over what we covered last week and what still needs a decision from both of us."
+        }
+      ],
+      "prefixRunMaxMs" : 162,
+      "prefixRunMeanMs" : 113,
+      "recognizer" : "qwen3asr-0.6b",
+      "residentBytesAfter" : 853737472,
+      "underLoad" : false
+    },
+    {
+      "audioSeconds" : 7.85,
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "coverage" : 0.97,
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 27
+      },
+      "item" : "fixture\/local-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "maxFinalDelayMs" : 184,
+      "meanFinalDelayMs" : 184,
+      "meanPartialDelayMs" : 1131,
+      "p90FinalDelayMs" : 184,
+      "phrases" : [
+        {
+          "finalDelayMs" : 184,
+          "index" : 1,
+          "partialDelayMs" : 1131,
+          "prefixRunMaxMs" : 151,
+          "prefixRunMeanMs" : 113,
+          "seconds" : 7.6,
+          "startSeconds" : 0,
+          "text" : "I think the simplest plan is to confirm the delivery date first, then we can talk about the budget and who is responsible for each part."
+        }
+      ],
+      "prefixRunMaxMs" : 151,
+      "prefixRunMeanMs" : 113,
+      "recognizer" : "qwen3asr-0.6b",
+      "residentBytesAfter" : 853704704,
+      "underLoad" : false
+    },
+    {
+      "audioSeconds" : 8.57,
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "coverage" : 0.99,
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 30
+      },
+      "item" : "fixture\/remote-es",
+      "kind" : "fixture",
+      "language" : "es",
+      "maxFinalDelayMs" : 227,
+      "meanFinalDelayMs" : 227,
+      "meanPartialDelayMs" : 1155,
+      "p90FinalDelayMs" : 227,
+      "phrases" : [
+        {
+          "finalDelayMs" : 227,
+          "index" : 1,
+          "partialDelayMs" : 1155,
+          "prefixRunMaxMs" : 221,
+          "prefixRunMeanMs" : 150,
+          "seconds" : 8.48,
+          "startSeconds" : 0,
+          "text" : "Gracias por unirte a la llamada de hoy. Antes de empezar, déjame repasar rápidamente lo que vimos la semana pasada y lo que todavía necesita una decisión de los dos."
+        }
+      ],
+      "prefixRunMaxMs" : 221,
+      "prefixRunMeanMs" : 150,
+      "recognizer" : "qwen3asr-0.6b",
+      "residentBytesAfter" : 853966848,
+      "underLoad" : false
+    },
+    {
+      "audioSeconds" : 8.37,
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "coverage" : 0.98,
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 29
+      },
+      "item" : "fixture\/generic-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "maxFinalDelayMs" : 436,
+      "meanFinalDelayMs" : 436,
+      "meanPartialDelayMs" : 1307,
+      "p90FinalDelayMs" : 436,
+      "phrases" : [
+        {
+          "finalDelayMs" : 436,
+          "index" : 1,
+          "partialDelayMs" : 1307,
+          "prefixRunMaxMs" : 340,
+          "prefixRunMeanMs" : 229,
+          "seconds" : 8.24,
+          "startSeconds" : 0,
+          "text" : "Thanks for joining the call today. Before we start, let me quickly go over what we covered last week and what still needs a decision from both of us."
+        }
+      ],
+      "prefixRunMaxMs" : 340,
+      "prefixRunMeanMs" : 229,
+      "recognizer" : "qwen3asr-1.7b",
+      "residentBytesAfter" : 2608332800,
+      "underLoad" : false
+    },
+    {
+      "audioSeconds" : 7.85,
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "coverage" : 0.97,
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 27
+      },
+      "item" : "fixture\/local-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "maxFinalDelayMs" : 283,
+      "meanFinalDelayMs" : 283,
+      "meanPartialDelayMs" : 1168,
+      "p90FinalDelayMs" : 283,
+      "phrases" : [
+        {
+          "finalDelayMs" : 283,
+          "index" : 1,
+          "partialDelayMs" : 1168,
+          "prefixRunMaxMs" : 284,
+          "prefixRunMeanMs" : 194,
+          "seconds" : 7.6,
+          "startSeconds" : 0,
+          "text" : "I think the simplest plan is to confirm the delivery date first. Then we can talk about the budget and who is responsible for each part."
+        }
+      ],
+      "prefixRunMaxMs" : 284,
+      "prefixRunMeanMs" : 194,
+      "recognizer" : "qwen3asr-1.7b",
+      "residentBytesAfter" : 2608316416,
+      "underLoad" : false
+    },
+    {
+      "audioSeconds" : 8.57,
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "coverage" : 0.99,
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 30
+      },
+      "item" : "fixture\/remote-es",
+      "kind" : "fixture",
+      "language" : "es",
+      "maxFinalDelayMs" : 402,
+      "meanFinalDelayMs" : 402,
+      "meanPartialDelayMs" : 1188,
+      "p90FinalDelayMs" : 402,
+      "phrases" : [
+        {
+          "finalDelayMs" : 402,
+          "index" : 1,
+          "partialDelayMs" : 1188,
+          "prefixRunMaxMs" : 427,
+          "prefixRunMeanMs" : 279,
+          "seconds" : 8.48,
+          "startSeconds" : 0,
+          "text" : "Gracias por unirte a la llamada de hoy. Antes de empezar, déjame repasar rápidamente lo que vimos la semana pasada y lo que todavía necesita una decisión de los dos."
+        }
+      ],
+      "prefixRunMaxMs" : 427,
+      "prefixRunMeanMs" : 279,
+      "recognizer" : "qwen3asr-1.7b",
+      "residentBytesAfter" : 2608545792,
+      "underLoad" : false
+    },
+    {
+      "audioSeconds" : 8.37,
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "coverage" : 0.98,
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 29
+      },
+      "item" : "fixture\/generic-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "maxFinalDelayMs" : 82,
+      "meanFinalDelayMs" : 82,
+      "meanPartialDelayMs" : 4193,
+      "p90FinalDelayMs" : 82,
+      "phrases" : [
+        {
+          "finalDelayMs" : 82,
+          "index" : 1,
+          "partialDelayMs" : 4193,
+          "seconds" : 8.24,
+          "startSeconds" : 0,
+          "text" : "Thanks for joining the call today.  Before we start.  Let me quickly go over what we covered last week and what still needs a decision from both of us."
+        }
+      ],
+      "recognizer" : "apple-speech",
+      "underLoad" : false
+    },
+    {
+      "audioSeconds" : 7.85,
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "coverage" : 0.97,
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 27
+      },
+      "item" : "fixture\/local-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "maxFinalDelayMs" : 113,
+      "meanFinalDelayMs" : 113,
+      "meanPartialDelayMs" : 4186,
+      "p90FinalDelayMs" : 113,
+      "phrases" : [
+        {
+          "finalDelayMs" : 113,
+          "index" : 1,
+          "partialDelayMs" : 4186,
+          "seconds" : 7.6,
+          "startSeconds" : 0,
+          "text" : "I think the simplest plan is to confirm the delivery date first.  Then we can talk about the budget and who is responsible for each part."
+        }
+      ],
+      "recognizer" : "apple-speech",
+      "underLoad" : false
+    },
+    {
+      "audioSeconds" : 0,
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "coverage" : 0,
+      "error" : "phrase 1: Apple speech offers no audio format for es-ES.",
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 0
+      },
+      "item" : "fixture\/remote-es",
+      "kind" : "fixture",
+      "language" : "es",
+      "maxFinalDelayMs" : 0,
+      "meanFinalDelayMs" : 0,
+      "p90FinalDelayMs" : 0,
+      "phrases" : [
+
+      ],
+      "recognizer" : "apple-speech",
+      "underLoad" : false
+    },
+    {
+      "audioSeconds" : 8.37,
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "coverage" : 0.98,
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 29
+      },
+      "item" : "fixture\/generic-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "maxFinalDelayMs" : 60,
+      "meanFinalDelayMs" : 60,
+      "meanPartialDelayMs" : 1188,
+      "p90FinalDelayMs" : 60,
+      "phrases" : [
+        {
+          "finalDelayMs" : 60,
+          "index" : 1,
+          "partialDelayMs" : 1188,
+          "seconds" : 8.24,
+          "startSeconds" : 0,
+          "text" : "Thanks for joining the call today.  Before we start, let me quickly go over what we covered last week and what still needs a decision from both of us."
+        }
+      ],
+      "recognizer" : "nemotron",
+      "residentBytesAfter" : 914636800,
+      "underLoad" : true
+    },
+    {
+      "audioSeconds" : 7.85,
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "coverage" : 0.97,
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 27
+      },
+      "item" : "fixture\/local-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "maxFinalDelayMs" : 55,
+      "meanFinalDelayMs" : 55,
+      "meanPartialDelayMs" : 1169,
+      "p90FinalDelayMs" : 55,
+      "phrases" : [
+        {
+          "finalDelayMs" : 55,
+          "index" : 1,
+          "partialDelayMs" : 1169,
+          "seconds" : 7.6,
+          "startSeconds" : 0,
+          "text" : "I think the simplest plan is to confirm the delivery date first, then we can talk about the budget and who is responsible for each part."
+        }
+      ],
+      "recognizer" : "nemotron",
+      "residentBytesAfter" : 914309120,
+      "underLoad" : true
+    },
+    {
+      "audioSeconds" : 8.57,
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "coverage" : 0.99,
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 30
+      },
+      "item" : "fixture\/remote-es",
+      "kind" : "fixture",
+      "language" : "es",
+      "maxFinalDelayMs" : 37,
+      "meanFinalDelayMs" : 37,
+      "meanPartialDelayMs" : 1174,
+      "p90FinalDelayMs" : 37,
+      "phrases" : [
+        {
+          "finalDelayMs" : 37,
+          "index" : 1,
+          "partialDelayMs" : 1174,
+          "seconds" : 8.48,
+          "startSeconds" : 0,
+          "text" : "Gracias por unirte a la llamada de hoy, antes de empezar, déjame repasar rápidamente lo que vimos la semana pasada y lo que todavía necesita una decisión de los dos."
+        }
+      ],
+      "recognizer" : "nemotron",
+      "residentBytesAfter" : 914653184,
+      "underLoad" : true
+    },
+    {
+      "audioSeconds" : 8.37,
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "coverage" : 0.98,
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 29
+      },
+      "item" : "fixture\/generic-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "maxFinalDelayMs" : 304,
+      "meanFinalDelayMs" : 304,
+      "meanPartialDelayMs" : 1138,
+      "p90FinalDelayMs" : 304,
+      "phrases" : [
+        {
+          "finalDelayMs" : 304,
+          "index" : 1,
+          "partialDelayMs" : 1138,
+          "prefixRunMaxMs" : 162,
+          "prefixRunMeanMs" : 110,
+          "seconds" : 8.24,
+          "startSeconds" : 0,
+          "text" : "Thanks for joining the call today. Before we start, let me quickly go over what we covered last week and what still needs a decision from both of us."
+        }
+      ],
+      "prefixRunMaxMs" : 162,
+      "prefixRunMeanMs" : 110,
+      "recognizer" : "qwen3asr-0.6b",
+      "residentBytesAfter" : 854048768,
+      "underLoad" : true
+    },
+    {
+      "audioSeconds" : 7.85,
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "coverage" : 0.97,
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 27
+      },
+      "item" : "fixture\/local-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "maxFinalDelayMs" : 189,
+      "meanFinalDelayMs" : 189,
+      "meanPartialDelayMs" : 1134,
+      "p90FinalDelayMs" : 189,
+      "phrases" : [
+        {
+          "finalDelayMs" : 189,
+          "index" : 1,
+          "partialDelayMs" : 1134,
+          "prefixRunMaxMs" : 154,
+          "prefixRunMeanMs" : 113,
+          "seconds" : 7.6,
+          "startSeconds" : 0,
+          "text" : "I think the simplest plan is to confirm the delivery date first, then we can talk about the budget and who is responsible for each part."
+        }
+      ],
+      "prefixRunMaxMs" : 154,
+      "prefixRunMeanMs" : 113,
+      "recognizer" : "qwen3asr-0.6b",
+      "residentBytesAfter" : 854032384,
+      "underLoad" : true
+    },
+    {
+      "audioSeconds" : 8.57,
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "coverage" : 0.99,
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 30
+      },
+      "item" : "fixture\/remote-es",
+      "kind" : "fixture",
+      "language" : "es",
+      "maxFinalDelayMs" : 257,
+      "meanFinalDelayMs" : 257,
+      "meanPartialDelayMs" : 1144,
+      "p90FinalDelayMs" : 257,
+      "phrases" : [
+        {
+          "finalDelayMs" : 257,
+          "index" : 1,
+          "partialDelayMs" : 1144,
+          "prefixRunMaxMs" : 243,
+          "prefixRunMeanMs" : 156,
+          "seconds" : 8.48,
+          "startSeconds" : 0,
+          "text" : "Gracias por unirte a la llamada de hoy. Antes de empezar, déjame repasar rápidamente lo que vimos la semana pasada y lo que todavía necesita una decisión de los dos."
+        }
+      ],
+      "prefixRunMaxMs" : 243,
+      "prefixRunMeanMs" : 156,
+      "recognizer" : "qwen3asr-0.6b",
+      "residentBytesAfter" : 854097920,
+      "underLoad" : true
+    },
+    {
+      "audioSeconds" : 8.37,
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "coverage" : 0.98,
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 29
+      },
+      "item" : "fixture\/generic-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "maxFinalDelayMs" : 408,
+      "meanFinalDelayMs" : 408,
+      "meanPartialDelayMs" : 1216,
+      "p90FinalDelayMs" : 408,
+      "phrases" : [
+        {
+          "finalDelayMs" : 408,
+          "index" : 1,
+          "partialDelayMs" : 1216,
+          "prefixRunMaxMs" : 316,
+          "prefixRunMeanMs" : 211,
+          "seconds" : 8.24,
+          "startSeconds" : 0,
+          "text" : "Thanks for joining the call today. Before we start, let me quickly go over what we covered last week and what still needs a decision from both of us."
+        }
+      ],
+      "prefixRunMaxMs" : 316,
+      "prefixRunMeanMs" : 211,
+      "recognizer" : "qwen3asr-1.7b",
+      "residentBytesAfter" : 2608545792,
+      "underLoad" : true
+    },
+    {
+      "audioSeconds" : 7.85,
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "coverage" : 0.97,
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 27
+      },
+      "item" : "fixture\/local-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "maxFinalDelayMs" : 326,
+      "meanFinalDelayMs" : 326,
+      "meanPartialDelayMs" : 1215,
+      "p90FinalDelayMs" : 326,
+      "phrases" : [
+        {
+          "finalDelayMs" : 326,
+          "index" : 1,
+          "partialDelayMs" : 1215,
+          "prefixRunMaxMs" : 306,
+          "prefixRunMeanMs" : 214,
+          "seconds" : 7.6,
+          "startSeconds" : 0,
+          "text" : "I think the simplest plan is to confirm the delivery date first. Then we can talk about the budget and who is responsible for each part."
+        }
+      ],
+      "prefixRunMaxMs" : 306,
+      "prefixRunMeanMs" : 214,
+      "recognizer" : "qwen3asr-1.7b",
+      "residentBytesAfter" : 2608513024,
+      "underLoad" : true
+    },
+    {
+      "audioSeconds" : 8.57,
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "coverage" : 0.99,
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 30
+      },
+      "item" : "fixture\/remote-es",
+      "kind" : "fixture",
+      "language" : "es",
+      "maxFinalDelayMs" : 524,
+      "meanFinalDelayMs" : 524,
+      "meanPartialDelayMs" : 1207,
+      "p90FinalDelayMs" : 524,
+      "phrases" : [
+        {
+          "finalDelayMs" : 524,
+          "index" : 1,
+          "partialDelayMs" : 1207,
+          "prefixRunMaxMs" : 471,
+          "prefixRunMeanMs" : 308,
+          "seconds" : 8.48,
+          "startSeconds" : 0,
+          "text" : "Gracias por unirte a la llamada de hoy. Antes de empezar, déjame repasar rápidamente lo que vimos la semana pasada y lo que todavía necesita una decisión de los dos."
+        }
+      ],
+      "prefixRunMaxMs" : 471,
+      "prefixRunMeanMs" : 308,
+      "recognizer" : "qwen3asr-1.7b",
+      "residentBytesAfter" : 2608627712,
+      "underLoad" : true
+    },
+    {
+      "audioSeconds" : 8.37,
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "coverage" : 0.98,
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 29
+      },
+      "item" : "fixture\/generic-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "maxFinalDelayMs" : 89,
+      "meanFinalDelayMs" : 89,
+      "meanPartialDelayMs" : 4178,
+      "p90FinalDelayMs" : 89,
+      "phrases" : [
+        {
+          "finalDelayMs" : 89,
+          "index" : 1,
+          "partialDelayMs" : 4178,
+          "seconds" : 8.24,
+          "startSeconds" : 0,
+          "text" : "Thanks for joining the call today.  Before we start.  Let me quickly go over what we covered last week and what still needs a decision from both of us."
+        }
+      ],
+      "recognizer" : "apple-speech",
+      "underLoad" : true
+    },
+    {
+      "audioSeconds" : 7.85,
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "coverage" : 0.97,
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 27
+      },
+      "item" : "fixture\/local-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "maxFinalDelayMs" : 115,
+      "meanFinalDelayMs" : 115,
+      "meanPartialDelayMs" : 4182,
+      "p90FinalDelayMs" : 115,
+      "phrases" : [
+        {
+          "finalDelayMs" : 115,
+          "index" : 1,
+          "partialDelayMs" : 4182,
+          "seconds" : 7.6,
+          "startSeconds" : 0,
+          "text" : "I think the simplest plan is to confirm the delivery date first.  Then we can talk about the budget and who is responsible for each part."
+        }
+      ],
+      "recognizer" : "apple-speech",
+      "underLoad" : true
+    },
+    {
+      "audioSeconds" : 0,
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "coverage" : 0,
+      "error" : "phrase 1: Apple speech offers no audio format for es-ES.",
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 0
+      },
+      "item" : "fixture\/remote-es",
+      "kind" : "fixture",
+      "language" : "es",
+      "maxFinalDelayMs" : 0,
+      "meanFinalDelayMs" : 0,
+      "p90FinalDelayMs" : 0,
+      "phrases" : [
+
+      ],
+      "recognizer" : "apple-speech",
+      "underLoad" : true
+    }
+  ],
+  "recognition" : [
+    {
+      "audioSeconds" : 8.37,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "detectedLanguage" : "en-US",
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 29
+      },
+      "hypothesis" : "Thanks for joining the call today.  Before we start, let me quickly go over what we covered last week and what still needs a decision from both of us.",
+      "item" : "fixture\/generic-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "ms" : 109,
+      "realTimeFactor" : 0.013,
+      "recognizer" : "nemotron",
+      "residentBytesAfter" : 911130624,
+      "underLoad" : false
+    },
+    {
+      "audioSeconds" : 7.85,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "detectedLanguage" : "en-US",
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 27
+      },
+      "hypothesis" : "I think the simplest plan is to confirm the delivery date first, then we can talk about the budget and who is responsible for each part.",
+      "item" : "fixture\/local-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "ms" : 96,
+      "realTimeFactor" : 0.012,
+      "recognizer" : "nemotron",
+      "residentBytesAfter" : 912162816,
+      "underLoad" : false
+    },
+    {
+      "audioSeconds" : 8.57,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "detectedLanguage" : "es-ES",
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 30
+      },
+      "hypothesis" : "Gracias por unirte a la llamada de hoy.  Antes de empezar, déjame repasar rápidamente lo que vimos la semana pasada y lo que todavía necesita una decisión de los dos.",
+      "item" : "fixture\/remote-es",
+      "kind" : "fixture",
+      "language" : "es",
+      "ms" : 110,
+      "realTimeFactor" : 0.013,
+      "recognizer" : "nemotron",
+      "residentBytesAfter" : 912965632,
+      "underLoad" : false
+    },
+    {
+      "audioSeconds" : 8.37,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "detectedLanguage" : "English",
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 29
+      },
+      "hypothesis" : "Thanks for joining the call today. Before we start, let me quickly go over what we covered last week and what still needs a decision from both of us.",
+      "item" : "fixture\/generic-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "ms" : 179,
+      "realTimeFactor" : 0.021,
+      "recognizer" : "qwen3asr-0.6b",
+      "residentBytesAfter" : 850214912,
+      "underLoad" : false
+    },
+    {
+      "audioSeconds" : 7.85,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "detectedLanguage" : "English",
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 27
+      },
+      "hypothesis" : "I think the simplest plan is to confirm the delivery date first. Then we can talk about the budget and who is responsible for each part.",
+      "item" : "fixture\/local-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "ms" : 139,
+      "realTimeFactor" : 0.018,
+      "recognizer" : "qwen3asr-0.6b",
+      "residentBytesAfter" : 850198528,
+      "underLoad" : false
+    },
+    {
+      "audioSeconds" : 8.57,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "detectedLanguage" : "Spanish",
+      "errorRate" : {
+        "errors" : 1,
+        "total" : 30
+      },
+      "hypothesis" : "Gracias por unirte a la llamada de hoy. Antes de empezar, dejame repasar rápidamente lo que vimos la semana pasada y lo que todavía necesita una decisión de los dos.",
+      "item" : "fixture\/remote-es",
+      "kind" : "fixture",
+      "language" : "es",
+      "ms" : 199,
+      "realTimeFactor" : 0.023,
+      "recognizer" : "qwen3asr-0.6b",
+      "residentBytesAfter" : 850313216,
+      "underLoad" : false
+    },
+    {
+      "audioSeconds" : 8.37,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "detectedLanguage" : "English",
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 29
+      },
+      "hypothesis" : "Thanks for joining the call today. Before we start, let me quickly go over what we covered last week and what still needs a decision from both of us.",
+      "item" : "fixture\/generic-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "ms" : 167,
+      "realTimeFactor" : 0.02,
+      "recognizer" : "qwen3asr-0.6b+context",
+      "residentBytesAfter" : 850362368,
+      "underLoad" : false
+    },
+    {
+      "audioSeconds" : 7.85,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "detectedLanguage" : "English",
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 27
+      },
+      "hypothesis" : "I think the simplest plan is to confirm the delivery date first. Then we can talk about the budget and who is responsible for each part.",
+      "item" : "fixture\/local-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "ms" : 139,
+      "realTimeFactor" : 0.018,
+      "recognizer" : "qwen3asr-0.6b+context",
+      "residentBytesAfter" : 850690048,
+      "underLoad" : false
+    },
+    {
+      "audioSeconds" : 8.57,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "detectedLanguage" : "Spanish",
+      "errorRate" : {
+        "errors" : 1,
+        "total" : 30
+      },
+      "hypothesis" : "Gracias por unirte a la llamada de hoy. Antes de empezar, dejame repasar rápidamente lo que vimos la semana pasada y lo que todavía necesita una decisión de los dos.",
+      "item" : "fixture\/remote-es",
+      "kind" : "fixture",
+      "language" : "es",
+      "ms" : 196,
+      "realTimeFactor" : 0.023,
+      "recognizer" : "qwen3asr-0.6b+context",
+      "residentBytesAfter" : 851230720,
+      "underLoad" : false
+    },
+    {
+      "audioSeconds" : 8.37,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "detectedLanguage" : "English",
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 29
+      },
+      "hypothesis" : "Thanks for joining the call today. Before we start, let me quickly go over what we covered last week and what still needs a decision from both of us.",
+      "item" : "fixture\/generic-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "ms" : 354,
+      "realTimeFactor" : 0.042,
+      "recognizer" : "qwen3asr-1.7b",
+      "residentBytesAfter" : 2604924928,
+      "underLoad" : false
+    },
+    {
+      "audioSeconds" : 7.85,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "detectedLanguage" : "English",
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 27
+      },
+      "hypothesis" : "I think the simplest plan is to confirm the delivery date first. Then we can talk about the budget and who is responsible for each part.",
+      "item" : "fixture\/local-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "ms" : 276,
+      "realTimeFactor" : 0.035,
+      "recognizer" : "qwen3asr-1.7b",
+      "residentBytesAfter" : 2605072384,
+      "underLoad" : false
+    },
+    {
+      "audioSeconds" : 8.57,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "detectedLanguage" : "Spanish",
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 30
+      },
+      "hypothesis" : "Gracias por unirte a la llamada de hoy. Antes de empezar, déjame repasar rápidamente lo que vimos la semana pasada y lo que todavía necesita una decisión de los dos.",
+      "item" : "fixture\/remote-es",
+      "kind" : "fixture",
+      "language" : "es",
+      "ms" : 410,
+      "realTimeFactor" : 0.048,
+      "recognizer" : "qwen3asr-1.7b",
+      "residentBytesAfter" : 2605498368,
+      "underLoad" : false
+    },
+    {
+      "audioSeconds" : 8.37,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "detectedLanguage" : "English",
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 29
+      },
+      "hypothesis" : "Thanks for joining the call today. Before we start, let me quickly go over what we covered last week and what still needs a decision from both of us.",
+      "item" : "fixture\/generic-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "ms" : 321,
+      "realTimeFactor" : 0.038,
+      "recognizer" : "qwen3asr-1.7b+context",
+      "residentBytesAfter" : 2605432832,
+      "underLoad" : false
+    },
+    {
+      "audioSeconds" : 7.85,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "detectedLanguage" : "English",
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 27
+      },
+      "hypothesis" : "I think the simplest plan is to confirm the delivery date first. Then we can talk about the budget and who is responsible for each part.",
+      "item" : "fixture\/local-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "ms" : 275,
+      "realTimeFactor" : 0.035,
+      "recognizer" : "qwen3asr-1.7b+context",
+      "residentBytesAfter" : 2605842432,
+      "underLoad" : false
+    },
+    {
+      "audioSeconds" : 8.57,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "detectedLanguage" : "Spanish",
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 30
+      },
+      "hypothesis" : "Gracias por unirte a la llamada de hoy. Antes de empezar, déjame repasar rápidamente lo que vimos la semana pasada y lo que todavía necesita una decisión de los dos.",
+      "item" : "fixture\/remote-es",
+      "kind" : "fixture",
+      "language" : "es",
+      "ms" : 406,
+      "realTimeFactor" : 0.047,
+      "recognizer" : "qwen3asr-1.7b+context",
+      "residentBytesAfter" : 2605957120,
+      "underLoad" : false
+    },
+    {
+      "audioSeconds" : 8.37,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 29
+      },
+      "hypothesis" : "Thanks for joining the call today.  Before we start.  Let me quickly go over what we covered last week and what still needs a decision from both of us.",
+      "item" : "fixture\/generic-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "ms" : 143,
+      "realTimeFactor" : 0.017,
+      "recognizer" : "apple-speech",
+      "underLoad" : false
+    },
+    {
+      "audioSeconds" : 7.85,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 27
+      },
+      "hypothesis" : "I think the simplest plan is to confirm the delivery date first.  Then we can talk about the budget and who is responsible for each part.",
+      "item" : "fixture\/local-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "ms" : 144,
+      "realTimeFactor" : 0.018,
+      "recognizer" : "apple-speech",
+      "underLoad" : false
+    },
+    {
+      "audioSeconds" : 8.57,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "error" : "Apple speech failed for es-ES (asset status supported): Error Domain=SFSpeechErrorDomain Code=3 \"Audio format is not supported\" UserInfo={NSLocalizedDescription=Audio format is not supported}",
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 0
+      },
+      "hypothesis" : "",
+      "item" : "fixture\/remote-es",
+      "kind" : "fixture",
+      "language" : "es",
+      "ms" : -1,
+      "realTimeFactor" : 0,
+      "recognizer" : "apple-speech",
+      "underLoad" : false
+    },
+    {
+      "audioSeconds" : 8.37,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "detectedLanguage" : "en-US",
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 29
+      },
+      "hypothesis" : "Thanks for joining the call today.  Before we start, let me quickly go over what we covered last week and what still needs a decision from both of us.",
+      "item" : "fixture\/generic-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "ms" : 102,
+      "realTimeFactor" : 0.012,
+      "recognizer" : "nemotron",
+      "residentBytesAfter" : 913391616,
+      "underLoad" : true
+    },
+    {
+      "audioSeconds" : 7.85,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "detectedLanguage" : "en-US",
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 27
+      },
+      "hypothesis" : "I think the simplest plan is to confirm the delivery date first, then we can talk about the budget and who is responsible for each part.",
+      "item" : "fixture\/local-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "ms" : 91,
+      "realTimeFactor" : 0.012,
+      "recognizer" : "nemotron",
+      "residentBytesAfter" : 914046976,
+      "underLoad" : true
+    },
+    {
+      "audioSeconds" : 8.57,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "detectedLanguage" : "es-ES",
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 30
+      },
+      "hypothesis" : "Gracias por unirte a la llamada de hoy.  Antes de empezar, déjame repasar rápidamente lo que vimos la semana pasada y lo que todavía necesita una decisión de los dos.",
+      "item" : "fixture\/remote-es",
+      "kind" : "fixture",
+      "language" : "es",
+      "ms" : 108,
+      "realTimeFactor" : 0.013,
+      "recognizer" : "nemotron",
+      "residentBytesAfter" : 914636800,
+      "underLoad" : true
+    },
+    {
+      "audioSeconds" : 8.37,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "detectedLanguage" : "English",
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 29
+      },
+      "hypothesis" : "Thanks for joining the call today. Before we start, let me quickly go over what we covered last week and what still needs a decision from both of us.",
+      "item" : "fixture\/generic-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "ms" : 172,
+      "realTimeFactor" : 0.021,
+      "recognizer" : "qwen3asr-0.6b",
+      "residentBytesAfter" : 853966848,
+      "underLoad" : true
+    },
+    {
+      "audioSeconds" : 7.85,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "detectedLanguage" : "English",
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 27
+      },
+      "hypothesis" : "I think the simplest plan is to confirm the delivery date first. Then we can talk about the budget and who is responsible for each part.",
+      "item" : "fixture\/local-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "ms" : 133,
+      "realTimeFactor" : 0.017,
+      "recognizer" : "qwen3asr-0.6b",
+      "residentBytesAfter" : 853917696,
+      "underLoad" : true
+    },
+    {
+      "audioSeconds" : 8.57,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "detectedLanguage" : "Spanish",
+      "errorRate" : {
+        "errors" : 1,
+        "total" : 30
+      },
+      "hypothesis" : "Gracias por unirte a la llamada de hoy. Antes de empezar, dejame repasar rápidamente lo que vimos la semana pasada y lo que todavía necesita una decisión de los dos.",
+      "item" : "fixture\/remote-es",
+      "kind" : "fixture",
+      "language" : "es",
+      "ms" : 193,
+      "realTimeFactor" : 0.023,
+      "recognizer" : "qwen3asr-0.6b",
+      "residentBytesAfter" : 853983232,
+      "underLoad" : true
+    },
+    {
+      "audioSeconds" : 8.37,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "detectedLanguage" : "English",
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 29
+      },
+      "hypothesis" : "Thanks for joining the call today. Before we start, let me quickly go over what we covered last week and what still needs a decision from both of us.",
+      "item" : "fixture\/generic-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "ms" : 155,
+      "realTimeFactor" : 0.019,
+      "recognizer" : "qwen3asr-0.6b+context",
+      "residentBytesAfter" : 853999616,
+      "underLoad" : true
+    },
+    {
+      "audioSeconds" : 7.85,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "detectedLanguage" : "English",
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 27
+      },
+      "hypothesis" : "I think the simplest plan is to confirm the delivery date first. Then we can talk about the budget and who is responsible for each part.",
+      "item" : "fixture\/local-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "ms" : 176,
+      "realTimeFactor" : 0.022,
+      "recognizer" : "qwen3asr-0.6b+context",
+      "residentBytesAfter" : 854016000,
+      "underLoad" : true
+    },
+    {
+      "audioSeconds" : 8.57,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "detectedLanguage" : "Spanish",
+      "errorRate" : {
+        "errors" : 1,
+        "total" : 30
+      },
+      "hypothesis" : "Gracias por unirte a la llamada de hoy. Antes de empezar, dejame repasar rápidamente lo que vimos la semana pasada y lo que todavía necesita una decisión de los dos.",
+      "item" : "fixture\/remote-es",
+      "kind" : "fixture",
+      "language" : "es",
+      "ms" : 195,
+      "realTimeFactor" : 0.023,
+      "recognizer" : "qwen3asr-0.6b+context",
+      "residentBytesAfter" : 854065152,
+      "underLoad" : true
+    },
+    {
+      "audioSeconds" : 8.37,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "detectedLanguage" : "English",
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 29
+      },
+      "hypothesis" : "Thanks for joining the call today. Before we start, let me quickly go over what we covered last week and what still needs a decision from both of us.",
+      "item" : "fixture\/generic-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "ms" : 361,
+      "realTimeFactor" : 0.043,
+      "recognizer" : "qwen3asr-1.7b",
+      "residentBytesAfter" : 2608545792,
+      "underLoad" : true
+    },
+    {
+      "audioSeconds" : 7.85,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "detectedLanguage" : "English",
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 27
+      },
+      "hypothesis" : "I think the simplest plan is to confirm the delivery date first. Then we can talk about the budget and who is responsible for each part.",
+      "item" : "fixture\/local-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "ms" : 301,
+      "realTimeFactor" : 0.038,
+      "recognizer" : "qwen3asr-1.7b",
+      "residentBytesAfter" : 2608496640,
+      "underLoad" : true
+    },
+    {
+      "audioSeconds" : 8.57,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "detectedLanguage" : "Spanish",
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 30
+      },
+      "hypothesis" : "Gracias por unirte a la llamada de hoy. Antes de empezar, déjame repasar rápidamente lo que vimos la semana pasada y lo que todavía necesita una decisión de los dos.",
+      "item" : "fixture\/remote-es",
+      "kind" : "fixture",
+      "language" : "es",
+      "ms" : 418,
+      "realTimeFactor" : 0.049,
+      "recognizer" : "qwen3asr-1.7b",
+      "residentBytesAfter" : 2608545792,
+      "underLoad" : true
+    },
+    {
+      "audioSeconds" : 8.37,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "detectedLanguage" : "English",
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 29
+      },
+      "hypothesis" : "Thanks for joining the call today. Before we start, let me quickly go over what we covered last week and what still needs a decision from both of us.",
+      "item" : "fixture\/generic-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "ms" : 345,
+      "realTimeFactor" : 0.041,
+      "recognizer" : "qwen3asr-1.7b+context",
+      "residentBytesAfter" : 2608562176,
+      "underLoad" : true
+    },
+    {
+      "audioSeconds" : 7.85,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "detectedLanguage" : "English",
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 27
+      },
+      "hypothesis" : "I think the simplest plan is to confirm the delivery date first. Then we can talk about the budget and who is responsible for each part.",
+      "item" : "fixture\/local-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "ms" : 324,
+      "realTimeFactor" : 0.041,
+      "recognizer" : "qwen3asr-1.7b+context",
+      "residentBytesAfter" : 2608513024,
+      "underLoad" : true
+    },
+    {
+      "audioSeconds" : 8.57,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "detectedLanguage" : "Spanish",
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 30
+      },
+      "hypothesis" : "Gracias por unirte a la llamada de hoy. Antes de empezar, déjame repasar rápidamente lo que vimos la semana pasada y lo que todavía necesita una decisión de los dos.",
+      "item" : "fixture\/remote-es",
+      "kind" : "fixture",
+      "language" : "es",
+      "ms" : 493,
+      "realTimeFactor" : 0.058,
+      "recognizer" : "qwen3asr-1.7b+context",
+      "residentBytesAfter" : 2608578560,
+      "underLoad" : true
+    },
+    {
+      "audioSeconds" : 8.37,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 29
+      },
+      "hypothesis" : "Thanks for joining the call today.  Before we start.  Let me quickly go over what we covered last week and what still needs a decision from both of us.",
+      "item" : "fixture\/generic-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "ms" : 168,
+      "realTimeFactor" : 0.02,
+      "recognizer" : "apple-speech",
+      "underLoad" : true
+    },
+    {
+      "audioSeconds" : 7.85,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 27
+      },
+      "hypothesis" : "I think the simplest plan is to confirm the delivery date first.  Then we can talk about the budget and who is responsible for each part.",
+      "item" : "fixture\/local-en",
+      "kind" : "fixture",
+      "language" : "en",
+      "ms" : 161,
+      "realTimeFactor" : 0.021,
+      "recognizer" : "apple-speech",
+      "underLoad" : true
+    },
+    {
+      "audioSeconds" : 8.57,
+      "byCategory" : {
+
+      },
+      "checksPassed" : 0,
+      "checksTotal" : 0,
+      "error" : "Apple speech failed for es-ES (asset status supported): Error Domain=SFSpeechErrorDomain Code=3 \"Audio format is not supported\" UserInfo={NSLocalizedDescription=Audio format is not supported}",
+      "errorRate" : {
+        "errors" : 0,
+        "total" : 0
+      },
+      "hypothesis" : "",
+      "item" : "fixture\/remote-es",
+      "kind" : "fixture",
+      "language" : "es",
+      "ms" : -1,
+      "realTimeFactor" : 0,
+      "recognizer" : "apple-speech",
+      "underLoad" : true
+    }
+  ],
+  "settings" : {
+    "appleLocales" : "en-US, es-ES, zh-CN",
+    "applePaced" : "reporting: volatileResults; one analyzer per phrase, prepared and started before the clock; 320 ms buffers",
+    "chunkMs" : "560",
+    "contextWindow" : "2",
+    "load" : "true",
+    "paced" : "true",
+    "prefixEvery" : "1.0",
+    "spanishLocale" : "es-ES"
+  },
+  "translation" : [
+    {
+      "from" : "en",
+      "item" : "fixture\/generic-en",
+      "line" : 1,
+      "ms" : 1048,
+      "output" : "Gracias por unirte a la llamada de hoy. Antes de empezar, permíteme repasar rápidamente lo que tratamos la semana pasada y lo que aún necesita una decisión de ambos.",
+      "source" : "Thanks for joining the call today. Before we start, let me quickly go over what we covered last week and what still needs a decision from both of us.",
+      "to" : "es",
+      "translator" : "apple-translation",
+      "underLoad" : false,
+      "withContext" : false
+    },
+    {
+      "from" : "en",
+      "item" : "fixture\/local-en",
+      "line" : 1,
+      "ms" : 435,
+      "output" : "Creo que el plan más sencillo es confirmar primero la fecha de entrega, luego podemos hablar sobre el presupuesto y quién es responsable de cada parte.",
+      "source" : "I think the simplest plan is to confirm the delivery date first, then we can talk about the budget and who is responsible for each part.",
+      "to" : "es",
+      "translator" : "apple-translation",
+      "underLoad" : false,
+      "withContext" : false
+    },
+    {
+      "from" : "es",
+      "item" : "fixture\/remote-es",
+      "line" : 1,
+      "ms" : 583,
+      "output" : "Thank you for joining today's call. Before we start, let me quickly review what we saw last week and what still needs a decision from both of us.",
+      "source" : "Gracias por unirte a la llamada de hoy. Antes de empezar, déjame repasar rápidamente lo que vimos la semana pasada y lo que todavía necesita una decisión de los dos.",
+      "to" : "en",
+      "translator" : "apple-translation",
+      "underLoad" : false,
+      "withContext" : false
+    },
+    {
+      "firstTokenMs" : 62,
+      "from" : "en",
+      "item" : "fixture\/generic-en",
+      "line" : 1,
+      "ms" : 203,
+      "output" : "Gracias por participar en la llamada de hoy. Antes de comenzar, me despido rápidamente de lo que hemos cubierto la semana pasada y de lo que aún necesita una decisión de ambos.",
+      "source" : "Thanks for joining the call today. Before we start, let me quickly go over what we covered last week and what still needs a decision from both of us.",
+      "to" : "es",
+      "translator" : "qwen3.5-2b-4bit",
+      "underLoad" : false,
+      "withContext" : false
+    },
+    {
+      "firstTokenMs" : 44,
+      "from" : "en",
+      "item" : "fixture\/local-en",
+      "line" : 1,
+      "ms" : 155,
+      "output" : "Creo que el plan más sencillo es confirmar primero la fecha de entrega, y luego podemos hablar del presupuesto y quién se encarga de cada parte.",
+      "source" : "I think the simplest plan is to confirm the delivery date first, then we can talk about the budget and who is responsible for each part.",
+      "to" : "es",
+      "translator" : "qwen3.5-2b-4bit",
+      "underLoad" : false,
+      "withContext" : false
+    },
+    {
+      "firstTokenMs" : 53,
+      "from" : "es",
+      "item" : "fixture\/remote-es",
+      "line" : 1,
+      "ms" : 172,
+      "output" : "Thank you for joining today's call. Before we begin, let me quickly recap what we covered last week and what still needs a decision from both of us.",
+      "source" : "Gracias por unirte a la llamada de hoy. Antes de empezar, déjame repasar rápidamente lo que vimos la semana pasada y lo que todavía necesita una decisión de los dos.",
+      "to" : "en",
+      "translator" : "qwen3.5-2b-4bit",
+      "underLoad" : false,
+      "withContext" : false
+    },
+    {
+      "firstTokenMs" : 44,
+      "from" : "en",
+      "item" : "fixture\/generic-en",
+      "line" : 1,
+      "ms" : 184,
+      "output" : "Gracias por participar en la llamada de hoy. Antes de comenzar, me despido rápidamente de lo que hemos cubierto la semana pasada y de lo que aún necesita una decisión de ambos.",
+      "source" : "Thanks for joining the call today. Before we start, let me quickly go over what we covered last week and what still needs a decision from both of us.",
+      "to" : "es",
+      "translator" : "qwen3.5-2b-4bit-nocontext",
+      "underLoad" : false,
+      "withContext" : false
+    },
+    {
+      "firstTokenMs" : 43,
+      "from" : "en",
+      "item" : "fixture\/local-en",
+      "line" : 1,
+      "ms" : 156,
+      "output" : "Creo que el plan más sencillo es confirmar primero la fecha de entrega, y luego podemos hablar del presupuesto y quién se encarga de cada parte.",
+      "source" : "I think the simplest plan is to confirm the delivery date first, then we can talk about the budget and who is responsible for each part.",
+      "to" : "es",
+      "translator" : "qwen3.5-2b-4bit-nocontext",
+      "underLoad" : false,
+      "withContext" : false
+    },
+    {
+      "firstTokenMs" : 53,
+      "from" : "es",
+      "item" : "fixture\/remote-es",
+      "line" : 1,
+      "ms" : 172,
+      "output" : "Thank you for joining today's call. Before we begin, let me quickly recap what we covered last week and what still needs a decision from both of us.",
+      "source" : "Gracias por unirte a la llamada de hoy. Antes de empezar, déjame repasar rápidamente lo que vimos la semana pasada y lo que todavía necesita una decisión de los dos.",
+      "to" : "en",
+      "translator" : "qwen3.5-2b-4bit-nocontext",
+      "underLoad" : false,
+      "withContext" : false
+    },
+    {
+      "firstTokenMs" : 126,
+      "from" : "en",
+      "item" : "fixture\/generic-en",
+      "line" : 1,
+      "ms" : 319,
+      "output" : "Gracias por participar en la llamada de hoy. Antes de empezar, permítanme revisar rápidamente lo que hablamos la semana pasada y lo que todavía necesita una decisión de ambos.",
+      "source" : "Thanks for joining the call today. Before we start, let me quickly go over what we covered last week and what still needs a decision from both of us.",
+      "to" : "es",
+      "translator" : "hy-mt2-1.8b-4bit",
+      "underLoad" : false,
+      "withContext" : false
+    },
+    {
+      "firstTokenMs" : 70,
+      "from" : "en",
+      "item" : "fixture\/local-en",
+      "line" : 1,
+      "ms" : 226,
+      "output" : "Creo que el plan más sencillo es confirmar primero la fecha de entrega, y luego podemos hablar sobre el presupuesto y quién es responsable de cada parte.",
+      "source" : "I think the simplest plan is to confirm the delivery date first, then we can talk about the budget and who is responsible for each part.",
+      "to" : "es",
+      "translator" : "hy-mt2-1.8b-4bit",
+      "underLoad" : false,
+      "withContext" : false
+    },
+    {
+      "firstTokenMs" : 78,
+      "from" : "es",
+      "item" : "fixture\/remote-es",
+      "line" : 1,
+      "ms" : 202,
+      "output" : "Thank you for joining today’s call. Before we start, let me quickly review what we saw last week, and what still requires a decision from both of us.",
+      "source" : "Gracias por unirte a la llamada de hoy. Antes de empezar, déjame repasar rápidamente lo que vimos la semana pasada y lo que todavía necesita una decisión de los dos.",
+      "to" : "en",
+      "translator" : "hy-mt2-1.8b-4bit",
+      "underLoad" : false,
+      "withContext" : false
+    },
+    {
+      "from" : "en",
+      "item" : "fixture\/generic-en",
+      "line" : 1,
+      "ms" : 1170,
+      "output" : "Gracias por unirte a la llamada de hoy. Antes de empezar, permíteme repasar rápidamente lo que tratamos la semana pasada y lo que aún necesita una decisión de ambos.",
+      "source" : "Thanks for joining the call today. Before we start, let me quickly go over what we covered last week and what still needs a decision from both of us.",
+      "to" : "es",
+      "translator" : "apple-translation",
+      "underLoad" : true,
+      "withContext" : false
+    },
+    {
+      "from" : "en",
+      "item" : "fixture\/local-en",
+      "line" : 1,
+      "ms" : 488,
+      "output" : "Creo que el plan más sencillo es confirmar primero la fecha de entrega, luego podemos hablar sobre el presupuesto y quién es responsable de cada parte.",
+      "source" : "I think the simplest plan is to confirm the delivery date first, then we can talk about the budget and who is responsible for each part.",
+      "to" : "es",
+      "translator" : "apple-translation",
+      "underLoad" : true,
+      "withContext" : false
+    },
+    {
+      "from" : "es",
+      "item" : "fixture\/remote-es",
+      "line" : 1,
+      "ms" : 653,
+      "output" : "Thank you for joining today's call. Before we start, let me quickly review what we saw last week and what still needs a decision from both of us.",
+      "source" : "Gracias por unirte a la llamada de hoy. Antes de empezar, déjame repasar rápidamente lo que vimos la semana pasada y lo que todavía necesita una decisión de los dos.",
+      "to" : "en",
+      "translator" : "apple-translation",
+      "underLoad" : true,
+      "withContext" : false
+    },
+    {
+      "firstTokenMs" : 51,
+      "from" : "en",
+      "item" : "fixture\/generic-en",
+      "line" : 1,
+      "ms" : 1465,
+      "output" : "Gracias por participar en la llamada de hoy. Antes de comenzar, me despido rápidamente de lo que hemos cubierto la semana pasada y de lo que aún necesita una decisión de ambos.",
+      "source" : "Thanks for joining the call today. Before we start, let me quickly go over what we covered last week and what still needs a decision from both of us.",
+      "to" : "es",
+      "translator" : "qwen3.5-2b-4bit",
+      "underLoad" : true,
+      "withContext" : false
+    },
+    {
+      "firstTokenMs" : 55,
+      "from" : "en",
+      "item" : "fixture\/local-en",
+      "line" : 1,
+      "ms" : 1930,
+      "output" : "Creo que el plan más sencillo es confirmar primero la fecha de entrega, y luego podemos hablar del presupuesto y quién se encarga de cada parte.",
+      "source" : "I think the simplest plan is to confirm the delivery date first, then we can talk about the budget and who is responsible for each part.",
+      "to" : "es",
+      "translator" : "qwen3.5-2b-4bit",
+      "underLoad" : true,
+      "withContext" : false
+    },
+    {
+      "firstTokenMs" : 64,
+      "from" : "es",
+      "item" : "fixture\/remote-es",
+      "line" : 1,
+      "ms" : 1919,
+      "output" : "Thank you for joining today's call. Before we begin, let me quickly recap what we covered last week and what still needs a decision from both of us.",
+      "source" : "Gracias por unirte a la llamada de hoy. Antes de empezar, déjame repasar rápidamente lo que vimos la semana pasada y lo que todavía necesita una decisión de los dos.",
+      "to" : "en",
+      "translator" : "qwen3.5-2b-4bit",
+      "underLoad" : true,
+      "withContext" : false
+    },
+    {
+      "firstTokenMs" : 59,
+      "from" : "en",
+      "item" : "fixture\/generic-en",
+      "line" : 1,
+      "ms" : 2117,
+      "output" : "Gracias por participar en la llamada de hoy. Antes de comenzar, me despido rápidamente de lo que hemos cubierto la semana pasada y de lo que aún necesita una decisión de ambos.",
+      "source" : "Thanks for joining the call today. Before we start, let me quickly go over what we covered last week and what still needs a decision from both of us.",
+      "to" : "es",
+      "translator" : "qwen3.5-2b-4bit-nocontext",
+      "underLoad" : true,
+      "withContext" : false
+    },
+    {
+      "firstTokenMs" : 51,
+      "from" : "en",
+      "item" : "fixture\/local-en",
+      "line" : 1,
+      "ms" : 2035,
+      "output" : "Creo que el plan más sencillo es confirmar primero la fecha de entrega, y luego podemos hablar del presupuesto y quién se encarga de cada parte.",
+      "source" : "I think the simplest plan is to confirm the delivery date first, then we can talk about the budget and who is responsible for each part.",
+      "to" : "es",
+      "translator" : "qwen3.5-2b-4bit-nocontext",
+      "underLoad" : true,
+      "withContext" : false
+    },
+    {
+      "firstTokenMs" : 59,
+      "from" : "es",
+      "item" : "fixture\/remote-es",
+      "line" : 1,
+      "ms" : 1994,
+      "output" : "Thank you for joining today's call. Before we begin, let me quickly recap what we covered last week and what still needs a decision from both of us.",
+      "source" : "Gracias por unirte a la llamada de hoy. Antes de empezar, déjame repasar rápidamente lo que vimos la semana pasada y lo que todavía necesita una decisión de los dos.",
+      "to" : "en",
+      "translator" : "qwen3.5-2b-4bit-nocontext",
+      "underLoad" : true,
+      "withContext" : false
+    },
+    {
+      "firstTokenMs" : 105,
+      "from" : "en",
+      "item" : "fixture\/generic-en",
+      "line" : 1,
+      "ms" : 369,
+      "output" : "Gracias por participar en la llamada de hoy. Antes de empezar, permítanme revisar rápidamente lo que hablamos la semana pasada y lo que todavía necesita una decisión de ambos.",
+      "source" : "Thanks for joining the call today. Before we start, let me quickly go over what we covered last week and what still needs a decision from both of us.",
+      "to" : "es",
+      "translator" : "hy-mt2-1.8b-4bit",
+      "underLoad" : true,
+      "withContext" : false
+    },
+    {
+      "firstTokenMs" : 83,
+      "from" : "en",
+      "item" : "fixture\/local-en",
+      "line" : 1,
+      "ms" : 295,
+      "output" : "Creo que el plan más sencillo es confirmar primero la fecha de entrega, y luego podemos hablar sobre el presupuesto y quién es responsable de cada parte.",
+      "source" : "I think the simplest plan is to confirm the delivery date first, then we can talk about the budget and who is responsible for each part.",
+      "to" : "es",
+      "translator" : "hy-mt2-1.8b-4bit",
+      "underLoad" : true,
+      "withContext" : false
+    },
+    {
+      "firstTokenMs" : 96,
+      "from" : "es",
+      "item" : "fixture\/remote-es",
+      "line" : 1,
+      "ms" : 274,
+      "output" : "Thank you for joining today’s call. Before we start, let me quickly review what we saw last week, and what still requires a decision from both of us.",
+      "source" : "Gracias por unirte a la llamada de hoy. Antes de empezar, déjame repasar rápidamente lo que vimos la semana pasada y lo que todavía necesita una decisión de los dos.",
+      "to" : "en",
+      "translator" : "hy-mt2-1.8b-4bit",
+      "underLoad" : true,
+      "withContext" : false
+    }
+  ]
+}

@@ -1,13 +1,13 @@
 import Foundation
 
-// Engine protocol framing: the client-side copy of Engine/Sources/TranslateEngine/Frames.swift.
+// Engine protocol framing: the client-side copy of Engine/Sources/EngineProtocol/Frames.swift.
 // Keep the two in step (docs/PROTOCOL.md).
 //
 // Frame = u32 big-endian header length · JSON header · u32 big-endian payload length · payload bytes.
 
 public enum EngineFrame {
     public static let maxHeaderBytes = 64 * 1024
-    public static let maxPayloadBytes = 4 * 1024 * 1024
+    public static let maxPayloadBytes = 64 * 1024 * 1024   // ten minutes of 16 kHz Float32 is 38 MiB
 
     public struct Message: Sendable {
         public let header: [String: any Sendable]
@@ -39,6 +39,20 @@ public enum EngineFrame {
         return data
     }
 
+    /// Numbers inside nested objects get the same typing as top-level ones.
+    static func plain(_ object: [String: Any]) -> [String: any Sendable] {
+        var result: [String: any Sendable] = [:]
+        for (key, value) in object {
+            if let string = value as? String { result[key] = string }
+            else if let number = value as? NSNumber {
+                if CFGetTypeID(number) == CFBooleanGetTypeID() { result[key] = number.boolValue }
+                else if let integer = Int(exactly: number) { result[key] = integer }
+                else { result[key] = number.doubleValue }
+            }
+        }
+        return result
+    }
+
     public final class Reader {
         private var buffer = Data()
         public init() {}
@@ -59,6 +73,7 @@ public enum EngineFrame {
                 guard let raw = try JSONSerialization.jsonObject(with: headerData) as? [String: Any] else { throw EngineClientProblem("Frame header is not an object.") }
                 // JSON numbers arrive as NSNumber, which also bridges to Bool for 0 and 1; decide by the
                 // number's real type so `seq: 0` stays an integer and `discarded: true` stays a boolean.
+                // Arrays of objects (segments, alignment items) and arrays of strings are kept as they are.
                 var header: [String: any Sendable] = [:]
                 for (key, value) in raw {
                     if let string = value as? String { header[key] = string }
@@ -67,6 +82,8 @@ public enum EngineFrame {
                         else if let integer = Int(exactly: number) { header[key] = integer }
                         else { header[key] = number.doubleValue }
                     }
+                    else if let list = value as? [[String: Any]] { header[key] = list.map { EngineFrame.plain($0) } }
+                    else if let strings = value as? [String] { header[key] = strings }
                 }
                 let payload = Data(buffer[buffer.startIndex + payloadStart ..< buffer.startIndex + payloadStart + payloadLength])
                 buffer.removeSubrange(buffer.startIndex ..< buffer.startIndex + payloadStart + payloadLength)

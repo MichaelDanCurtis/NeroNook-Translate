@@ -1,5 +1,6 @@
 import Foundation
 import NookPluginSDK
+import Translation
 import TranslateCore
 
 // Host-free checks. Uses the real SDK validators for the manifest and Core replay for journals.
@@ -30,6 +31,24 @@ do {
         try manifest.validate()
         guard manifest.launchMode == "application" else { throw ModuleProblem("Translate must run in application launch mode.") }
         print("OK manifest \(manifest.id) \(manifest.version)")
+    } else if arguments.contains("--translation-probe") {
+        // Bisection aid: the standalone probe's exact sequence, run inside this binary.
+        let availability = LanguageAvailability()
+        let status = await availability.status(from: Locale.Language(identifier: "en"), to: Locale.Language(identifier: "es"))
+        print("harness process: status en->es = \(status)")
+        let session = TranslationSession(installedSource: Locale.Language(identifier: "en"), target: Locale.Language(identifier: "es"))
+        do { try await session.prepareTranslation(); let r = try await session.translate("Thanks."); print("translate: \(r.targetText)") } catch { print("failed: \(error)") }
+    } else if arguments.contains("--compare") {
+        try await CompareCommand.run(arguments: Array(arguments))
+    } else if arguments.contains("--listening-set") {
+        try await CompareCommand.listeningSet(arguments: Array(arguments))
+    } else if let backend = argument(after: "--prepare-model") {
+        guard let helper = argument(after: backend == "tts" ? "--engine" : "--asr-helper"), let modelPrefix = argument(after: "--model") else {
+            throw TranslateCheckProblem("--prepare-model <nemotron|qwen3asr|aligner> --asr-helper <TranslateASR> --model <checkpoint prefix>, or --prepare-model tts --engine <TranslateEngine> --model <prefix>")
+        }
+        try CompareCommand.prepareModel(helper: URL(fileURLWithPath: helper), backend: backend, model: try CompareCommand.model(modelPrefix))
+    } else if let locale = argument(after: "--install-speech-locale") {
+        try await CompareCommand.installSpeechLocale(locale)
     } else if let enginePath = argument(after: "--engine") {
         // TranslateCheck --engine <TranslateEngine> --model <dir> --voices <dir> --out <dir> [--stress N]
         // Voices dir holds <slot>-<lang>.wav + .txt for slots generic, local, remote (see Fixtures/Voices).
@@ -58,7 +77,7 @@ do {
         let (transcript, summary) = Transcript.replay(recovery.events)
         print("OK replay events=\(recovery.events.count) utterances=\(transcript.count) lastSeq=\(summary.lastSeq) validBytes=\(recovery.validBytes) ignoredTail=\(recovery.ignoredTail) stoppedAtLine=\(recovery.stoppedAtLine.map(String.init) ?? "none") stoppedAtSeq=\(summary.stoppedAtSeq.map(String.init) ?? "none")")
     } else {
-        print("Usage: TranslateCheck --manifest [path] | --replay <journal.jsonl>")
+        print("Usage: TranslateCheck --manifest [path] | --replay <journal.jsonl> | --engine <bin> --model <dir> --voices <dir> --out <dir> | --compare (--corpus <dir> | --fixtures <dir>) --out <dir> [--asr-helper <bin>] [--engine <bin>] [--recognizers …] [--translators …] [--pairs en:es,es:en] | --install-speech-locale <id>")
         exit(2)
     }
 } catch {

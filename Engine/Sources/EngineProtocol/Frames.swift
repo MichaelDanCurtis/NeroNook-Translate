@@ -1,22 +1,22 @@
 import Foundation
 
-// Engine protocol framing. The same codec lives in Sources/TranslateEngineClient/EngineFrames.swift;
-// keep the two in step (docs/PROTOCOL.md).
+// Engine protocol framing, shared by TranslateEngine and TranslateASR. The same codec lives in
+// Sources/TranslateEngineClient/EngineFrames.swift; keep the two in step (docs/PROTOCOL.md).
 //
 // Frame = u32 big-endian header length · JSON header · u32 big-endian payload length · payload bytes.
 // Headers are small JSON objects with a "type" field; payloads carry raw Float32 little-endian PCM.
 
-enum Frame {
-    static let maxHeaderBytes = 64 * 1024
-    static let maxPayloadBytes = 4 * 1024 * 1024
+public enum Frame {
+    public static let maxHeaderBytes = 64 * 1024
+    public static let maxPayloadBytes = 64 * 1024 * 1024   // ten minutes of 16 kHz Float32 is 38 MiB
 
-    struct Message {
-        let header: [String: Any]
-        let payload: Data
-        var type: String { header["type"] as? String ?? "" }
+    public struct Message {
+        public let header: [String: Any]
+        public let payload: Data
+        public var type: String { header["type"] as? String ?? "" }
     }
 
-    static func encode(_ header: [String: Any], payload: Data = Data()) throws -> Data {
+    public static func encode(_ header: [String: Any], payload: Data = Data()) throws -> Data {
         let json = try JSONSerialization.data(withJSONObject: header, options: [.sortedKeys])
         guard json.count <= maxHeaderBytes, payload.count <= maxPayloadBytes else { throw EngineProblem("Frame exceeds its limit.") }
         var data = Data(capacity: 8 + json.count + payload.count)
@@ -28,10 +28,11 @@ enum Frame {
     }
 
     /// Incremental decoder; feed bytes as they arrive and take complete messages.
-    final class Reader {
+    public final class Reader {
+        public init() {}
         private var buffer = Data()
 
-        func feed(_ bytes: Data) throws -> [Message] {
+        public func feed(_ bytes: Data) throws -> [Message] {
             buffer.append(bytes)
             var messages: [Message] = []
             while true {
@@ -54,8 +55,8 @@ enum Frame {
     }
 }
 
-struct EngineProblem: Error, CustomStringConvertible {
-    let message: String
-    init(_ message: String) { self.message = message }
-    var description: String { message }
+public struct EngineProblem: Error, CustomStringConvertible {
+    public let message: String
+    public init(_ message: String) { self.message = message }
+    public var description: String { message }
 }
