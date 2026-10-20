@@ -59,7 +59,9 @@ final class CorpusAndReceiptTests: XCTestCase {
         let receipt = CompareRunner.Receipt(date: "2026-10-20", machine: "Mac16,5", build: ["sdkStamp": "27.0"], settings: ["chunkMs": "560"], models: ["nemotron": "folder"], corpus: "test", items: ["en/scripted"],
                                             recognition: recognition, translation: translation, paced: paced,
                                             load: ["recognition": LoadGenerator.Summary(syntheses: 4, audioSeconds: 30, generationMs: 9000, meanFirstAudioMs: 150, realTimeFactor: 0.3, errors: 0),
-                                                   "paced": LoadGenerator.Summary(syntheses: 1, audioSeconds: 5, generationMs: 1500, meanFirstAudioMs: 150, realTimeFactor: 0.3, errors: 6, stoppedEarly: true)], notes: ["n"])
+                                                   "paced": LoadGenerator.Summary(syntheses: 1, audioSeconds: 5, generationMs: 1500, meanFirstAudioMs: 150, realTimeFactor: 0.3, errors: 6, stoppedEarly: true)],
+                                            resources: ["recognition": PassResources(wallSeconds: 12.5, processes: [ProcessSample(process: "asr-nemotron", cpuSeconds: 3.1, cpuPercent: 25, footprintMB: 870, peakFootprintMB: 900, mlxActiveMB: 600, mlxPeakMB: 700, mlxCacheMB: 10)],
+                                                                                    gpu: GPUSample(meanDevicePercent: 40, maxDevicePercent: 90, meanRendererPercent: 35, samples: 50, inUseMemoryMB: 2500))], notes: ["n"])
         let summary = CompareRunner.summary(receipt)
         XCTAssert(summary.contains("| nemotron | en/scripted | – | 10.0% (1/10) | 9/10 | 3/3 | 2/3 | – | – | – | 3000 ms / 60.0 s | 0.05 |"), summary)
         XCTAssert(summary.contains("| nemotron | en/scripted | TTS | 10.0% (1/10)"), summary)
@@ -68,6 +70,7 @@ final class CorpusAndReceiptTests: XCTestCase {
         XCTAssert(summary.contains("| paced | 1 | 5.0 | 0.3 | 150 | 6 | no |"), summary)
         XCTAssert(summary.contains("sdkStamp 27.0"), summary)
         XCTAssert(summary.contains("- nemotron: `folder`"), summary)
+        XCTAssert(summary.contains("| recognition | 12.5 | 40% / 90% (50 samples) | asr-nemotron | 3.1 | 25 | 870.0 | 900.0 | 600.0 / 700.0 |"), summary)
         XCTAssert(summary.contains("| nemotron | – | 60.0 | 3000 | 900 |"), "footprint: ms per minute of speech\n" + summary)
         let sheet = CompareRunner.reviewSheet(receipt)
         XCTAssertEqual(sheet.components(separatedBy: "| qwen3.5-2b-4bit |").count - 1, 1, "under-load rows are the same model; rated once")

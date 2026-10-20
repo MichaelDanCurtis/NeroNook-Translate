@@ -169,6 +169,12 @@ enum CompareCommand {
             default: throw TranslateCheckProblem("Unknown translator \(name)")
             }
         }
+        var monitors = [ResourceMonitor(name: "TranslateCheck (Apple in-process)", pid: getpid())]
+        for (index, client) in asrClients.enumerated() {
+            let name = recognizerNames.filter { $0 != "none" && $0 != "apple" }[index]
+            monitors.append(ResourceMonitor(name: "asr-\(name)", pid: client.processIdentifier, stats: { try await client.stats() }))
+        }
+        for translator in hymt2s { monitors.append(ResourceMonitor(name: translator.name, pid: translator.processIdentifier)) }
         var load: LoadGenerator?
         if flags.contains("--load") {
             let client = try await launchEngine()
@@ -178,6 +184,7 @@ enum CompareCommand {
             print("load voice ready in \(prepared.prepareMs) ms; Qwen TTS synthesizes continuously during the under-load passes")
             load = LoadGenerator(engine: client, slot: "generic", text: loadSentence)
         }
+        if let engine { monitors.append(ResourceMonitor(name: "engine (TTS\(models["qwen3.5-2b"] == nil ? "" : " + Qwen text"))", pid: engine.processIdentifier, stats: { try await engine.stats() })) }
 
         // Warm every candidate once so the first row of a receipt does not carry a model's warm-up
         // (first translation after a load, first recognition of a session) — plan §6.1 measures warm.
@@ -202,7 +209,7 @@ enum CompareCommand {
             }
             print("candidates warm")
             let receipt = try await CompareRunner.run(CompareRunner.Options(items: items, recognizers: recognizers, pacedRecognizers: pacedRecognizers, translators: translators, pairs: pairs,
-                                                                            load: load, prefixEvery: prefixEvery, settings: settings, models: models, out: out, corpusLabel: label))
+                                                                            load: load, prefixEvery: prefixEvery, settings: settings, models: models, monitors: monitors, out: out, corpusLabel: label))
             print("wrote \(out.appendingPathComponent("compare-receipt.json").path): \(receipt.recognition.count) recognition rows, \(receipt.paced.count) paced rows, \(receipt.translation.count) translation rows")
         } catch {
             await shutdownAll()

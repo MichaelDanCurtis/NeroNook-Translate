@@ -139,6 +139,7 @@ public actor HyMT2Translator: Translator {
     private let reader: LineReader
     private var broken: String?
     public private(set) var loadMs = -1
+    nonisolated(unsafe) public private(set) var processIdentifier: Int32 = 0
 
     public init(python: URL, script: URL, model: URL, useContext: Bool = true, log: URL? = nil) async throws {
         name = useContext ? "hy-mt2-1.8b-4bit" : "hy-mt2-1.8b-4bit-nocontext"
@@ -157,6 +158,7 @@ public actor HyMT2Translator: Translator {
         _ = fcntl(input.fileDescriptor, F_SETNOSIGPIPE, 1)
         reader = LineReader(stdout.fileHandleForReading)
         try process.run()
+        processIdentifier = process.processIdentifier
         let ready = try await Self.reply(from: reader, id: nil, timeout: 300)
         if let error = ready["error"] as? String { throw EngineClientProblem("Hy-MT2: \(error)") }
         loadMs = (ready["loadMs"] as? Int) ?? -1

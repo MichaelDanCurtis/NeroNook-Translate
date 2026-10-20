@@ -710,7 +710,7 @@ The owner's direction on October 19: compare the Qwen speech models seriously ag
 | Partial-caption delay | Time to first usable partial; for phrase-mode engines, the cost of a re-run every second on the growing phrase |
 | Under load | The same measures while Qwen TTS generates continuously in the engine |
 | Robustness | Accuracy on the Opus copy versus the clean copy |
-| Footprint | Resident memory and GPU time per minute of speech |
+| Footprint | Per pass: CPU time and physical footprint per process, MLX active and peak memory from the helpers, and the GPU's device utilization polled from the graphics driver (no privileges); wall time per minute of speech. GPU utilization is for the whole GPU, so it is a load figure, not a per-model cost |
 
 **Translation candidates.** Qwen3 or Qwen3.5 text model (2B–4B, 4‑bit) with context and glossary; Hy‑MT2 1.8B 4‑bit (through the existing interpreter environment, measurement only); Apple Translation.
 

@@ -8,6 +8,7 @@ import Foundation
 public actor HelperClient {
     nonisolated public let ready: EngineFrame.Message
     nonisolated public let startupMs: Int
+    nonisolated public let processIdentifier: Int32
 
     private let process: Process
     private let input: FileHandle
@@ -72,16 +73,19 @@ public actor HelperClient {
             throw EngineClientProblem(first?.string("message") ?? "The helper exited before reporting ready.")
         }
         let client = HelperClient(process: process, input: stdin.fileHandleForWriting, ready: first,
-                                  startupMs: Int(((ProcessInfo.processInfo.systemUptime - started) * 1000).rounded()))
+                                  startupMs: Int(((ProcessInfo.processInfo.systemUptime - started) * 1000).rounded()), processIdentifier: process.processIdentifier)
         await client.startConsuming(iterator)
         process.terminationHandler = { _ in Task { await client.processExited() } }
         if !process.isRunning { await client.processExited() }
         return client
     }
 
-    private init(process: Process, input: FileHandle, ready: EngineFrame.Message, startupMs: Int) {
-        self.process = process; self.input = input; self.ready = ready; self.startupMs = startupMs
+    private init(process: Process, input: FileHandle, ready: EngineFrame.Message, startupMs: Int, processIdentifier: Int32) {
+        self.process = process; self.input = input; self.ready = ready; self.startupMs = startupMs; self.processIdentifier = processIdentifier
     }
+
+    /// CPU time and footprint of the helper (sandbox-exec execs the helper in place, so the pid is the helper's).
+    nonisolated public func usage() -> ProcessUsage? { ProcessUsage.read(pid: processIdentifier) }
 
     deinit {
         consumer?.cancel()

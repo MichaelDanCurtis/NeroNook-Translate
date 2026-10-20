@@ -44,6 +44,31 @@ Debug `TranslateCheck`, release helpers under the sandbox, one `TranslateASR` pe
 | Under load (Qwen TTS synthesizing continuously: RTF 0.30–0.31, first audio ≈155 ms, 52 syntheses during the paced pass) | recognition and paced delays unchanged within noise for every recognizer; Apple and Hy‑MT2 translation +10–20%; **Qwen translation 1.5–2.1 s per line**, because the engine runs one request at a time and a translation waits behind the synthesis unit in progress |
 | Listening set (0.6B 8‑bit and 1.7B bf16 run; three fixture voices × en/es × two sentences × 0.32 and 0.16 s intervals, plus a pass while Nemotron streams) | 60 blinded clips, sheet and `tts-summary.md` written; key under `private/`. 0.6B 8‑bit: first audio 104 ms at 0.32 s, 70 ms at 0.16 s, RTF 0.26–0.29, unchanged under recognition, 2.0 GB resident. **1.7B bf16: first audio 550 ms, RTF 1.7** (slower than real time; 4.5 GB resident) against 0.29 for the 1.7B 8‑bit measured in M1b: worth a look at the runtime path before bf16 is judged on sound alone |
 
+## Resources per pass (fixture run with Nemotron, Qwen3‑ASR 0.6B, Apple, Apple Translation, Qwen3.5‑2B and Hy‑MT2; `smoke-fixtures/compare-summary-with-resources.md`)
+
+Measured without privileges: CPU time and physical footprint per process from the kernel, MLX counters from the helpers, GPU device utilization from the graphics driver polled every 250 ms. The GPU figure covers the whole GPU during the pass. Apple speech and Apple Translation run in system services, so their memory and CPU are not in any process row; their GPU share is inside the GPU figure.
+
+| Process | Footprint (peak) | CPU during its busiest pass | MLX active (peak) |
+| --- | --- | --- | --- |
+| Engine: Qwen3‑TTS 1.7B 8‑bit + Qwen3.5‑2B 4‑bit text | 4.3–4.7 GB (5.1 GB) | 118–128% of one core while synthesizing continuously; 17% translating alone | 4.0–4.4 GB (4.8 GB) |
+| TranslateASR, Nemotron 3.5 0.6B 8‑bit | 0.84–0.97 GB (1.29 GB) | 13% during whole‑clip recognition; 1% paced | 0.76 GB (0.90 GB) |
+| TranslateASR, Qwen3‑ASR 0.6B 4‑bit | 0.76–0.94 GB (1.54 GB) | 57% during whole‑clip recognition; 4–5% paced | 0.68 GB (1.44 GB) |
+| Hy‑MT2 server (sandboxed Python) | 1.4–1.5 GB (2.4 GB) | 10–20% translating | – |
+| TranslateCheck itself (Apple candidates in‑process) | 10 MB | 0–3% | – |
+
+| Pass | GPU device utilization mean / max |
+| --- | --- |
+| paced, alone (Nemotron, Qwen prefix re‑runs, Apple) | 42% / 100% |
+| paced, Qwen TTS running | 79% / 94% |
+| recognition, alone (whole clips; 1.7 s) | 72% / 85% |
+| recognition, Qwen TTS running | 90% / 100% |
+| translation, alone | 57% / 97% |
+| translation, Qwen TTS running | 78% / 98% |
+
+The listening set samples the same way per variant: the 0.6B 8‑bit TTS engine ran at 2.4 GB footprint (peak 2.8 GB), about 1.3 cores and 61% mean GPU while rendering clips, and 63% with Nemotron streaming beside it.
+
+Energy and thermal behaviour are not measured; they need `powermetrics` (root) and are scheduled for Milestone 3.
+
 ## Independent review (static, same day) and what it changed
 
 A separate reviewer read the uncommitted work without running it. Everything it rated a bug is fixed and covered by a test or a rerun; the rest is fixed where cheap or recorded here.
@@ -58,7 +83,7 @@ A separate reviewer read the uncommitted work without running it. Everything it 
 | Receipts were written only at the end; a load generator that gave up still produced "under load" rows; the listening set kept the blinding key next to the sheet and wrote clips in variant order; the codec script skipped `.m4a`; stereo recordings would lose a channel | `rows.jsonl` grows as rows complete; a pass whose load failed is marked invalid; key and receipt under `private/`, one modification date for all clips, clips and keys git‑ignored, consent text extended; all loader formats converted; stereo downmixed |
 | Receipts lacked provenance (models, settings, git head, SDK stamp); "+context" and the glossary use the scripted names (an oracle list) without saying so | Recorded in every receipt, with a note |
 
-Left as recorded risks: the harness never calls the aligner (not needed for D‑4); a translation of more than 2,048 bytes fails for Qwen and Hy‑MT2 (natural gold is one sentence per line); `swift test` timing assertions in the engine integration test fail when other helpers share the GPU (run it alone).
+Left as recorded risks: the harness never calls the aligner (not needed for D‑4); a translation of more than 2,048 bytes fails for Qwen and Hy‑MT2 (natural gold is one sentence per line); `swift test` timing assertions in the engine integration test fail when other helpers share the GPU (run it alone). After the review, per‑pass resource sampling was added (above), with three more tests; 89 tests pass.
 
 ## Findings that changed the design or the code
 
@@ -78,4 +103,4 @@ Left as recorded risks: the harness never calls the aligner (not needed for D‑
 
 ## Files
 
-`download-*.json`, `import-*.json`, `prepared-tokenizers.json`, `smoke-fixtures/` (the final fixture run with every candidate, paced and under load: receipt, summary, review sheet; the TTS summary of the two‑variant listening run), this README. Helper logs, clips and blinding keys are not kept (`.gitignore`).
+`download-*.json`, `import-*.json`, `prepared-tokenizers.json`, `smoke-fixtures/` (the final fixture run with every candidate, paced and under load: receipt, summary, review sheet; the summary of the later run with resource sampling; the TTS summary of the two‑variant listening run), this README. Helper logs, clips and blinding keys are not kept (`.gitignore`).

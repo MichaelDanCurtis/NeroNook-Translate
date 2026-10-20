@@ -48,6 +48,7 @@ public enum ListeningSet {
         public var machine: String
         public var variants: [VariantReceipt]
         public var clips: [Clip]
+        public var resources: [String: PassResources]   // "<variant> alone", "<variant> under recognition"
         public var notes: [String]
     }
     public struct Options {
@@ -82,6 +83,7 @@ public enum ListeningSet {
         try FileManager.default.createDirectory(at: clipsFolder, withIntermediateDirectories: true)
         var variants: [VariantReceipt] = []
         var clips: [Clip] = []
+        var resources: [String: PassResources] = [:]
         var used = Set<String>()
         func blindID() -> String {
             while true {
@@ -104,6 +106,9 @@ public enum ListeningSet {
             var prepareMs: [String: Int] = [:]
             var passes = 0
             var loadError: String?
+            var monitors = [ResourceMonitor(name: "engine", pid: engine.processIdentifier, stats: { try await engine.stats() }), ResourceMonitor(name: "TranslateCheck", pid: getpid())]
+            if let load = options.recognitionLoad { monitors.append(ResourceMonitor(name: "asr-nemotron", pid: load.client.processIdentifier, stats: { try await load.client.stats() })) }
+            let sampler = ResourceSampler(monitors: monitors)
             /// Prepares the voice's slot for one target language and warms it once, so measured first-audio
             /// numbers are warm (plan §6.1).
             func prepare(_ voice: Voice, for language: String, label: String = "") async throws {
@@ -114,6 +119,7 @@ public enum ListeningSet {
             }
             do {
                 var count = 0
+                await sampler.begin()
                 for voice in options.voices {
                     for language in languages {
                         try await prepare(voice, for: language)
@@ -126,6 +132,7 @@ public enum ListeningSet {
                         }
                     }
                 }
+                resources["\(variant.name) alone"] = await sampler.end()
                 print("  alone: \(count) clips over \(options.intervals.count) interval(s)")
                 if let load = options.recognitionLoad {
                     let paced = NemotronPaced(client: load.client)
@@ -139,6 +146,7 @@ public enum ListeningSet {
                         return (passes, nil)
                     }
                     count = 0
+                    await sampler.begin()
                     for voice in options.voices {
                         for language in languages {
                             guard let text = options.sentences[language]?.first else { continue }
@@ -148,6 +156,7 @@ public enum ListeningSet {
                             count += 1
                         }
                     }
+                    resources["\(variant.name) under recognition"] = await sampler.end()
                     streaming.cancel()
                     let outcome = await streaming.value
                     passes = outcome.passes; loadError = outcome.error
@@ -166,10 +175,11 @@ public enum ListeningSet {
 
         var machine = "unknown"; var size = 0
         if sysctlbyname("hw.model", nil, &size, nil, 0) == 0 { var buffer = [CChar](repeating: 0, count: size); if sysctlbyname("hw.model", &buffer, &size, nil, 0) == 0 { machine = String(cString: buffer) } }
-        let receipt = Receipt(date: ISO8601DateFormatter().string(from: Date()), machine: machine, variants: variants, clips: clips,
+        let receipt = Receipt(date: ISO8601DateFormatter().string(from: Date()), machine: machine, variants: variants, clips: clips, resources: resources,
                               notes: ["Clip ids are blinded; private/key.json and private/listening-receipt.json map them to variant and interval and must stay away from listeners.",
                                       "First audio and RTF are warm (one synthesis per slot before measuring). 'Under recognition' clips were made while Nemotron streamed a clip in a loop.",
-                                      "Identity ratings only mean something with the speakers' own reference recordings; synthetic fixtures check the plumbing."])
+                                      "Identity ratings only mean something with the speakers' own reference recordings; synthetic fixtures check the plumbing.",
+                                      "Resources: CPU time and footprint per process from the kernel, MLX counters from the helpers, GPU device utilization from the graphics driver polled every 250 ms (whole GPU, every process)."])
         let encoder = JSONEncoder(); encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         let privateFolder = options.out.appendingPathComponent("private")
         try FileManager.default.createDirectory(at: privateFolder, withIntermediateDirectories: true, attributes: [.posixPermissions: 0o700])
@@ -211,6 +221,10 @@ public enum ListeningSet {
             let rows = groups[key]!
             let first = rows.map(\.firstAudioMs), rtf = rows.map(\.realTimeFactor)
             md += "| \(rows[0].variant) | \(rows[0].streamingInterval) | \(rows[0].underRecognition ? "yes" : "no") | \(rows.count) | \(first.reduce(0, +) / rows.count) | \(first.max() ?? 0) | \(String(format: "%.3f", rtf.reduce(0, +) / Double(rows.count))) | \(String(format: "%.3f", rtf.max() ?? 0)) |\n"
+        }
+        if !receipt.resources.isEmpty {
+            md += "\n" + ResourceSampler.tableHeader
+            for key in receipt.resources.keys.sorted() { md += ResourceSampler.rows(key, receipt.resources[key]!) }
         }
         md += "\nNotes:\n" + receipt.notes.map { "- \($0)" }.joined(separator: "\n") + "\n"
         return md

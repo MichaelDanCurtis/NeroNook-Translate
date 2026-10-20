@@ -55,6 +55,8 @@ public actor EngineClient {
     private let helper: HelperClient
 
     public static var sandboxProfile: String { HelperClient.sandboxProfile }
+    nonisolated public var processIdentifier: Int32 { helper.processIdentifier }
+    nonisolated public func usage() -> ProcessUsage? { helper.usage() }
 
     /// Spawns the engine and waits for `ready`. On any failure the helper is terminated, never leaked.
     public static func launch(engine: URL, model: URL, log: URL? = nil, timeout: TimeInterval = 120) async throws -> EngineClient {

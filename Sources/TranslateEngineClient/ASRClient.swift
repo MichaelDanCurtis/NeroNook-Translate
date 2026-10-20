@@ -29,6 +29,8 @@ public actor ASRClient {
     }
 
     private init(helper: HelperClient, sampleRate: Int) { self.helper = helper; self.sampleRate = sampleRate; self.startupMs = helper.startupMs }
+    nonisolated public var processIdentifier: Int32 { helper.processIdentifier }
+    nonisolated public func usage() -> ProcessUsage? { helper.usage() }
 
     public func load(backend: String, model: URL) async throws -> Int {
         let reply = try await helper.request(["type": "load", "backend": backend, "model": model.path], timeout: 600)

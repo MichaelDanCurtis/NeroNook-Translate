@@ -79,6 +79,7 @@ public enum CompareRunner {
         public var translation: [TranslationRow]
         public var paced: [PacedRow]
         public var load: [String: LoadGenerator.Summary]
+        public var resources: [String: PassResources]   // per pass: CPU, footprint and MLX counters per process, GPU utilization
         public var notes: [String]
     }
 
@@ -93,13 +94,15 @@ public enum CompareRunner {
         public var load: LoadGenerator?
         public var settings: [String: String] = [:]
         public var models: [String: String] = [:]
+        public var monitors: [ResourceMonitor] = []
         public var out: URL
         public var corpusLabel: String
         public init(items: [CorpusItem], recognizers: [any Recognizer], pacedRecognizers: [any PacedRecognizer] = [], translators: [any Translator],
                     pairs: [(from: String, to: String)], load: LoadGenerator? = nil, prefixEvery: Double = 1, settings: [String: String] = [:], models: [String: String] = [:],
-                    out: URL, corpusLabel: String) {
+                    monitors: [ResourceMonitor] = [], out: URL, corpusLabel: String) {
             self.items = items; self.recognizers = recognizers; self.pacedRecognizers = pacedRecognizers; self.translators = translators
-            self.pairs = pairs; self.load = load; self.prefixEvery = prefixEvery; self.settings = settings; self.models = models; self.out = out; self.corpusLabel = corpusLabel
+            self.pairs = pairs; self.load = load; self.prefixEvery = prefixEvery; self.settings = settings; self.models = models; self.monitors = monitors
+            self.out = out; self.corpusLabel = corpusLabel
         }
     }
 
@@ -149,25 +152,34 @@ public enum CompareRunner {
         var translation: [TranslationRow] = []
         var paced: [PacedRow] = []
         var load: [String: LoadGenerator.Summary] = [:]
+        var resources: [String: PassResources] = [:]
         let log = RowLog(options.out.appendingPathComponent("rows.jsonl"))
+        let sampler = ResourceSampler(monitors: options.monitors)
         for underLoad in options.load == nil ? [false] : [false, true] {
             let suffix = underLoad ? " (Qwen TTS running)" : ""
+            let key = underLoad ? " under load" : ""
             if !options.recognizers.isEmpty {
                 print("recognition pass\(suffix)")
                 if underLoad { await options.load?.start() }
+                await sampler.begin()
                 recognition += await recognitionPass(options, underLoad: underLoad, log: log)
+                resources["recognition" + key] = await sampler.end()
                 if underLoad, let summary = await options.load?.stop() { load["recognition"] = summary }
             }
             if !options.pacedRecognizers.isEmpty {
                 print("paced pass\(suffix)")
                 if underLoad { await options.load?.start() }
+                await sampler.begin()
                 paced += await pacedPass(options, underLoad: underLoad, log: log)
+                resources["paced" + key] = await sampler.end()
                 if underLoad, let summary = await options.load?.stop() { load["paced"] = summary }
             }
             if !options.translators.isEmpty {
                 print("translation pass\(suffix)")
                 if underLoad { await options.load?.start() }
+                await sampler.begin()
                 translation += await translationPass(options, underLoad: underLoad, log: log)
+                resources["translation" + key] = await sampler.end()
                 if underLoad, let summary = await options.load?.stop() { load["translation"] = summary }
             }
         }
@@ -179,12 +191,14 @@ public enum CompareRunner {
                      "The '+context' recognizers and the translators' glossary receive the scripted names themselves, an oracle list: the best case for a participant list, not a prediction of one.",
                      "Recognition rows run the complete recording in phrase mode. Paced rows feed energy-gated phrases in real time (coverage = fraction of the recording fed) and measure delays from the nominal phrase end; phrase-mode engines also re-run the growing phrase every \(options.prefixEvery) s.",
                      "Translation rows translate the reference text, not recognizer output, so translation quality is isolated; meaning is rated by people from the review sheet.",
-                     "Under-load rows were measured while Qwen TTS synthesized continuously in the engine; the load table reports that synthesis. The Qwen text translator shares the engine process and its one-request-at-a-time executor, so its under-load delay is queueing behind the synthesis unit in progress."]
+                     "Under-load rows were measured while Qwen TTS synthesized continuously in the engine; the load table reports that synthesis. The Qwen text translator shares the engine process and its one-request-at-a-time executor, so its under-load delay is queueing behind the synthesis unit in progress.",
+                     "Resources per pass: CPU time (user plus system) and physical footprint per process from the kernel (proc_pid_rusage), MLX active, peak and cache bytes from each helper's stats reply, and the GPU's device utilization from the graphics driver's IOKit statistics polled every 250 ms. GPU utilization is for the whole GPU during the pass (every helper and any other app), so it is a load figure, not a per-model cost; nothing here needs privileges, and energy and thermal behaviour are not measured (they need powermetrics, which needs root)."]
         for (pass, summary) in load.sorted(by: { $0.key < $1.key }) where !summary.valid {
             notes.append("The under-load \(pass) pass is not valid: the load generator reported \(summary.errors) error(s)\(summary.stoppedEarly ? " and stopped early" : ""), so part of it ran without load.")
         }
         let receipt = Receipt(date: ISO8601DateFormatter().string(from: Date()), machine: machine, build: buildInfo(), settings: options.settings, models: options.models,
-                              corpus: options.corpusLabel, items: options.items.map(\.id), recognition: recognition, translation: translation, paced: paced, load: load, notes: notes)
+                              corpus: options.corpusLabel, items: options.items.map(\.id), recognition: recognition, translation: translation, paced: paced, load: load,
+                              resources: resources, notes: notes)
         let encoder = JSONEncoder(); encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         try encoder.encode(receipt).write(to: options.out.appendingPathComponent("compare-receipt.json"))
         try summary(receipt).write(to: options.out.appendingPathComponent("compare-summary.md"), atomically: true, encoding: .utf8)
@@ -328,6 +342,10 @@ public enum CompareRunner {
                 let s = receipt.load[key]!
                 md += "| \(key) | \(s.syntheses) | \(s.audioSeconds) | \(s.realTimeFactor) | \(s.meanFirstAudioMs) | \(s.errors) | \(s.valid ? "yes" : "no") |\n"
             }
+        }
+        if !receipt.resources.isEmpty {
+            md += "\n## Resources per pass\n\n" + ResourceSampler.tableHeader
+            for key in receipt.resources.keys.sorted() { md += ResourceSampler.rows(key, receipt.resources[key]!) }
         }
         let footprint = Dictionary(grouping: receipt.recognition.filter { $0.error == nil }) { "\($0.recognizer)|\($0.underLoad ? 1 : 0)" }
         if !footprint.isEmpty {
