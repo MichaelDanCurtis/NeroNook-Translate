@@ -42,6 +42,10 @@ do {
         try await CompareCommand.run(arguments: Array(arguments))
     } else if arguments.contains("--listening-set") {
         try await CompareCommand.listeningSet(arguments: Array(arguments))
+    } else if arguments.contains("--draft-gold") {
+        try await CompareCommand.draftGold(arguments: Array(arguments))
+    } else if arguments.contains("--voices-from-corpus") {
+        try CompareCommand.voicesFromCorpus(arguments: Array(arguments))
     } else if let backend = argument(after: "--prepare-model") {
         guard let helper = argument(after: backend == "tts" ? "--engine" : "--asr-helper"), let modelPrefix = argument(after: "--model") else {
             throw TranslateCheckProblem("--prepare-model <nemotron|qwen3asr|aligner> --asr-helper <TranslateASR> --model <checkpoint prefix>, or --prepare-model tts --engine <TranslateEngine> --model <prefix>")

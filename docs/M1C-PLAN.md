@@ -6,14 +6,14 @@
 
 - **Approved and done (items 6–9):** the five pinned downloads, the Mandarin Apple speech asset, the Nemotron and bf16 imports, and Hy‑MT2 through Voice's interpreter environment (read-only). Hashes and receipts are in `PROVENANCE.md` and `reports/m1c-engine-comparison-2026-10-20/`. The Spanish Apple asset waits on item 1 (variety).
 - **Harness built, independently reviewed and smoke-tested** on the synthetic fixtures with every candidate and mode; see the receipt. Every pass records CPU time and footprint per process, MLX counters and GPU utilization (no privileges); energy and thermal behaviour still need `powermetrics` (root) and wait for Milestone 3. Three things it taught: Qwen3‑ASR and the aligner need a one-time `--prepare-model` run (the runtime writes `tokenizer.json` into the model folder, which the sandbox then keeps read-only); Apple Translation reports installed packs as `supported` to any binary that SwiftPM's build system stamps with the deployment target as SDK, fixed with an explicit linker platform version; the Qwen3.5‑2B checkpoint is multimodal and its text model loads alone.
-- **Waiting on the owner:** items 1–5 (variety, recordings, speakers, corrections), 10 (pass bars) and 11 (listeners). Nothing in the comparison is scored until the recordings exist.
+- **Waiting on the owner:** items 2–5 (recordings, speakers, corrections), 10 (pass bars) and 11 (listeners). Item 1 is settled (`es-MX`). Nothing in the comparison is scored until the recordings exist.
 
 ## Already on this Mac (October 20 inventory)
 
 | Candidate | Where | Needed action |
 | --- | --- | --- |
 | Apple Translation EN↔ES, EN↔ZH | installed system assets | none |
-| Apple SpeechTranscriber | English installed; Spanish and Mandarin supported but not installed | system asset download (approval 7) |
+| Apple SpeechTranscriber | English, Mexican Spanish (`es-MX`, installed October 20 after item 1) and Mandarin installed | done (approval 7) |
 | Nemotron 3.5 ASR 0.6B 8‑bit | Voice's model folder | import by clone + hash (approval 8) |
 | Qwen3‑TTS Base 1.7B 8‑bit | Translate storage (imported in 1b) | none |
 | Qwen3‑TTS Base 1.7B bf16 | Hugging Face cache (`mlx-community/Qwen3-TTS-12Hz-1.7B-Base-bf16`, snapshot complete, 4.2 GB) | import by clone + hash (approval 8); no download |
@@ -25,7 +25,7 @@
 
 ## Owner approvals and actions
 
-1. Choose the Spanish variety (`es-ES` or `es-MX`/`es-US`).
+1. ~~Choose the Spanish variety.~~ **`es-MX` (Mexico), chosen October 20.** Apple speech uses `es-MX`; Nemotron's checkpoint has no Mexican prompt, so it runs with `es-US`; Apple Translation and the Qwen models are variety-agnostic.
 2. Record the English set: `Fixtures/Corpus/scripts/en.md`, then ~4 minutes of natural speech on its prompts.
 3. Arrange a Spanish speaker for `es.md` plus natural speech, with their agreement to be recorded and to have the recording used in these tests.
 4. Arrange a Mandarin native speaker for `zh.md` (may trail the EN↔ES pass).
@@ -37,7 +37,25 @@
 10. Confirm or amend the §6.1 pass bars before scoring.
 11. Listeners for the TTS‑variant part: one or two people who know the owner's voice, plus the Spanish and Mandarin speakers for pronunciation.
 
-Recording how‑to: QuickTime Player → File → New Audio Recording, quality Maximum, the Komplete Audio 6 or the MacBook microphone, no headphones needed, a quiet room; export and place files under `Fixtures/Corpus/raw/<language>/` (ignored by git; recordings never enter the repository). Read each numbered sentence of the script once, naturally, with a short pause between sentences; a slip is fine, just continue.
+## Recording how‑to (per speaker, about 10 minutes)
+
+QuickTime Player → File → New Audio Recording, quality Maximum, the Komplete Audio 6 or the MacBook microphone, no headphones needed, a quiet room. Save the files under `Fixtures/Corpus/raw/<language>/` (git ignores them; recordings never enter the repository). Any format QuickTime writes is fine (`.m4a`); the names matter:
+
+| File | What to record |
+| --- | --- |
+| `raw/en/scripted.m4a` | `Fixtures/Corpus/scripts/en.md`, every numbered sentence once, naturally, with a short pause between sentences; a slip is fine, just continue |
+| `raw/en/natural-1.m4a` (and `natural-2.m4a` if you split it) | about four minutes of unscripted speech on the prompts at the end of the script; one take under ten minutes |
+| `raw/en/reference.m4a` | sentences 1 to 3 of the script read again as one take, 10 to 20 seconds; this becomes your reference voice for the listening set |
+
+The same three files under `raw/es/` for the Spanish speaker (`scripts/es.md`), and under `raw/zh/` for the Mandarin speaker (`scripts/zh.md`), who may trail. Stereo recordings are fine (channels are averaged).
+
+Then one command does the rest:
+
+```bash
+scripts/run-m1c.sh
+```
+
+It derives the scripted gold, installs the Apple speech asset for the chosen Spanish variety, drafts a transcript for each natural recording as `gold/<language>/<name>.draft.txt`, makes the Opus call‑codec copies, runs the comparison with every candidate (paced and under load) for the language pairs the recordings allow, builds the listening‑set voices from the reference takes, and renders the listening set. Natural recordings count only after the speaker corrects the draft and renames it to `<name>.txt`; run the command again afterwards. Everything lands under `reports/m1c-engine-comparison-<date>/run/`; the listening key stays under `private/`.
 
 ## Work that needs no approval (starts now)
 
@@ -50,9 +68,9 @@ Recording how‑to: QuickTime Player → File → New Audio Recording, quality M
 ## Order
 
 1. ~~Harness and adapters (code), smoke‑tested on the synthetic fixtures.~~ Done October 20.
-2. Owner replies to 1 and 10 and schedules 2–4 (6–9 approved October 20).
+2. ~~Owner replies to 1~~ (`es-MX`, October 20) and 10 and schedules 2–4 (6–9 approved October 20). The §6.1 pass bars stand as written unless the owner changes them before scoring starts.
 3. ~~Downloads and imports on approval; hashes into `PROVENANCE.md`.~~ Done October 20.
-4. Recordings arrive; codec copies and transcript drafts; corrections.
+4. Recordings arrive; `scripts/run-m1c.sh <variety>` makes codec copies and transcript drafts; speakers correct the drafts; run again.
 5. Comparison runs: EN↔ES first (both directions), then TTS variants, then EN↔ZH when the Mandarin set exists. Receipts under `reports/m1c-…`.
 6. D‑4 and D‑5 decided from the receipts; Milestone 1d opens.
 

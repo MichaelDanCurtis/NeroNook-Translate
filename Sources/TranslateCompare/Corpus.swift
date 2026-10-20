@@ -20,7 +20,7 @@ public struct CorpusItem: Sendable {
 }
 
 public enum CorpusLoader {
-    static let audioExtensions: Set<String> = ["wav", "m4a", "caf", "aiff", "aif", "mp3", "flac"]
+    public static let audioExtensions: Set<String> = ["wav", "m4a", "caf", "aiff", "aif", "mp3", "flac"]
 
     /// Fixtures/Corpus layout: raw/<lang>/<name>.<audio> with gold/<lang>/<name>.txt (+ .checks.json), and
     /// the call-codec copy codec/<lang>/<name>.wav (scripts/corpus-codec.sh) sharing the same gold files.

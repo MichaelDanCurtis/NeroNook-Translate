@@ -17,7 +17,7 @@ This receipt covers the harness and the approved acquisitions. **Nothing is scor
 | Approval | What happened | Receipt |
 | --- | --- | --- |
 | 6 · pinned downloads | Qwen3‑ASR 1.7B 8‑bit (2.47 GB), Qwen3‑ASR 0.6B 4‑bit (0.71 GB), Qwen3‑ForcedAligner 0.6B 4‑bit (0.98 GB), Qwen3‑TTS 0.6B Base 8‑bit (1.99 GB), Qwen3.5‑2B 4‑bit (1.75 GB); LFS files verified against Hub SHA‑256 | `download-*.json`, recipes in `Resources/Models/` |
-| 7 · Apple speech assets | Mandarin (`zh-CN`) installed. **Spanish not downloaded**: the variety (item 1) is still open | — |
+| 7 · Apple speech assets | Mandarin (`zh-CN`) installed; Mexican Spanish (`es-MX`) installed once the owner chose the variety (item 1, same evening) | — |
 | 8 · imports | Nemotron 3.5 0.6B 8‑bit from Voice's model folder (0.76 GB); Qwen3‑TTS 1.7B Base bf16 from the Hugging Face cache (4.54 GB); APFS clones, every file hashed | `import-nemotron.json`, `import-qwen-base-bf16.json` |
 | 9 · Hy‑MT2 | Run read‑only from `NeroNook-Voice/build/interpreter-models/translator` through `build/interpreter-venv/bin/python`; nothing written there | `smoke-fixtures/hymt2-compare-receipt.json` |
 | one‑time prepare | The runtime generates `tokenizer.json` for checkpoints that ship without one; done once outside the sandbox for Qwen3‑ASR 0.6B and 1.7B, the aligner, and the 0.6B and bf16 TTS checkpoints | `prepared-tokenizers.json` |
@@ -33,11 +33,11 @@ Debug `TranslateCheck`, release helpers under the sandbox, one `TranslateASR` pe
 | Nemotron, whole clip | WER 0% (en, es); 90–140 ms per clip; 0.87 GB resident in its own helper |
 | Qwen3‑ASR 0.6B 4‑bit, whole clip, with and without `context` | WER 0%; 130–200 ms per clip; 0.81 GB |
 | Qwen3‑ASR 1.7B 8‑bit, whole clip, with and without `context` | WER 0%; 280–410 ms per clip; 2.5 GB |
-| Apple SpeechTranscriber (en‑US) | WER 0%; 140–240 ms per clip. **es‑ES fails**: assets not installed (item 1) |
+| Apple SpeechTranscriber (en‑US, es‑MX) | WER 0% on en and es; 140–240 ms per clip. Spanish ran after the `es-MX` asset was installed (earlier rows in `smoke-fixtures/` predate it and show es‑ES failing) |
 | Paced, Nemotron (560 ms chunks) | final text 33–72 ms after the phrase end; first partial ≈1.2 s after the phrase start |
 | Paced, Qwen3‑ASR 0.6B | final text 180–310 ms after the phrase end; re‑running the growing phrase every second costs 110–150 ms per run |
 | Paced, Qwen3‑ASR 1.7B | final text 280–440 ms after the phrase end; prefix re‑runs 190–280 ms (max 430 ms), still under the one‑second cadence |
-| Paced, Apple (320 ms buffers, volatile results, analyzer started before the clock) | final text 80–115 ms after the phrase end; **first volatile result ≈4.2 s** after the phrase start, so start‑up was not the cause; check reporting options before scoring |
+| Paced, Apple (320 ms buffers, volatile results, analyzer started before the clock) | final text 80–145 ms after the phrase end; **first volatile result ≈4.2 s** after the phrase start in English, and for Spanish (`es-MX`) only at the end of the 8.6 s clip, so start‑up was not the cause; check reporting options before scoring |
 | Apple Translation en→es, es→en | 435–1,050 ms per line |
 | Qwen3.5‑2B 4‑bit in the engine, with and without context | 155–205 ms per line alone, first token 45–60 ms |
 | Hy‑MT2 1.8B 4‑bit (sandboxed, Voice's environment read‑only) | 200–320 ms per line, first token 70–125 ms, loaded in 1.1 s |

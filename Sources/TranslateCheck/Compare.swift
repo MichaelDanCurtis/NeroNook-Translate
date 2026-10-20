@@ -20,6 +20,10 @@ enum CompareCommand {
     }
 
     static let ttsVariants = ["base-1.7b-8bit": "Qwen3-TTS-12Hz-1.7B-Base-8bit", "base-1.7b-bf16": "Qwen3-TTS-12Hz-1.7B-Base-bf16", "base-0.6b-8bit": "Qwen3-TTS-12Hz-0.6B-Base-8bit"]
+    /// The owner's choice (item 1, October 20, 2026): Mexican Spanish for Apple speech. Nemotron's checkpoint
+    /// has prompts for es-ES and es-US only, so Latin American varieties use es-US there.
+    static let defaultSpanishLocale = "es-MX"
+    static func nemotronSpanish(for locale: String) -> String { locale == "es-ES" ? "es-ES" : "es-US" }
     static let loadSentence = "I think we should confirm the delivery date first, and then look at the budget together before anyone commits to it."
 
     static func value(_ flag: String, in arguments: [String]) -> String? {
@@ -97,9 +101,10 @@ enum CompareCommand {
         var engine: EngineClient?
         var hymt2s: [HyMT2Translator] = []
         try FileManager.default.createDirectory(at: out, withIntermediateDirectories: true)
-        let spanishLocale = value("--spanish-locale") ?? "es-ES"
+        let spanishLocale = value("--spanish-locale") ?? defaultSpanishLocale
         let settings: [String: String] = ["chunkMs": "\(chunkMs)", "prefixEvery": "\(prefixEvery)", "contextWindow": "2", "spanishLocale": spanishLocale,
-                                          "appleLocales": "en-US, \(spanishLocale), zh-CN", "applePaced": ApplePaced.options, "paced": "\(paced)", "load": "\(flags.contains("--load"))"]
+                                          "appleLocales": "en-US, \(spanishLocale), zh-CN", "nemotronLanguages": "en-US, \(nemotronSpanish(for: spanishLocale)), zh-CN",
+                                          "applePaced": ApplePaced.options, "paced": "\(paced)", "load": "\(flags.contains("--load"))"]
         var models: [String: String] = [:]
 
         func launchEngine() async throws -> EngineClient {
@@ -128,8 +133,8 @@ enum CompareCommand {
                 let loadMs = try await asr.load(backend: backend, model: folder)
                 models[name] = folder.lastPathComponent
                 print("loaded \(name) in \(loadMs) ms")
-                // Nemotron takes the checkpoint's prompt keys (the helper refuses anything else); the Spanish variety is the one Apple uses.
-                let languageNames = backend == "nemotron" ? ["en": "en-US", "es": spanishLocale, "zh": "zh-CN"] : ["en": "English", "es": "Spanish", "zh": "Chinese"]
+                // Nemotron takes the checkpoint's prompt keys (the helper refuses anything else): es-ES, or es-US for the Latin American varieties.
+                let languageNames = backend == "nemotron" ? ["en": "en-US", "es": nemotronSpanish(for: spanishLocale), "zh": "zh-CN"] : ["en": "English", "es": "Spanish", "zh": "Chinese"]
                 recognizers.append(HelperRecognizer(name: name, client: asr, backend: backend, languages: ["en", "es", "zh"], languageNames: languageNames, useContext: false))
                 if backend == "qwen3asr" {
                     recognizers.append(HelperRecognizer(name: name + "+context", client: asr, backend: backend, languages: ["en", "es", "zh"], languageNames: languageNames, useContext: true))
@@ -216,6 +221,91 @@ enum CompareCommand {
             throw error
         }
         await shutdownAll()
+    }
+
+    // MARK: --draft-gold
+
+    /// Drafts a transcript for every recording under raw/<lang>/ that has no gold text yet (the natural
+    /// parts), as gold/<lang>/<name>.draft.txt, one sentence per line. The speaker corrects it and renames
+    /// it to <name>.txt; until then the loader skips the recording. Reference takes and scripted readings
+    /// are left alone. Qwen3-ASR 1.7B by default (`--recognizer nemotron` or `qwen3asr-0.6b` otherwise).
+    static func draftGold(arguments: [String]) async throws {
+        func value(_ flag: String) -> String? { CompareCommand.value(flag, in: arguments) }
+        guard let corpusPath = value("--corpus"), let helper = value("--asr-helper") else { throw TranslateCheckProblem("--draft-gold needs --corpus <dir> --asr-helper <TranslateASR> [--recognizer qwen3asr-1.7b] [--languages en,es,zh]") }
+        let corpus = URL(fileURLWithPath: corpusPath)
+        let languages = list(value("--languages") ?? "en,es,zh")
+        let name = value("--recognizer") ?? "qwen3asr-1.7b"
+        let backend = name == "nemotron" ? "nemotron" : "qwen3asr"
+        let prefix = name == "nemotron" ? "nemotron-3.5-asr-streaming-0.6b-8bit" : name == "qwen3asr-0.6b" ? "Qwen3-ASR-0.6B-4bit" : "Qwen3-ASR-1.7B-8bit"
+        let spanish = value("--spanish-locale") ?? defaultSpanishLocale
+        let languageNames = backend == "nemotron" ? ["en": "en-US", "es": nemotronSpanish(for: spanish), "zh": "zh-CN"] : ["en": "English", "es": "Spanish", "zh": "Chinese"]
+        var pending: [(language: String, file: URL)] = []
+        for language in languages {
+            let raw = corpus.appendingPathComponent("raw/\(language)")
+            for file in ((try? FileManager.default.contentsOfDirectory(atPath: raw.path)) ?? []).sorted() {
+                let url = raw.appendingPathComponent(file)
+                let base = url.deletingPathExtension().lastPathComponent
+                guard CorpusLoader.audioExtensions.contains(url.pathExtension.lowercased()), !base.hasPrefix("reference") else { continue }
+                let gold = corpus.appendingPathComponent("gold/\(language)/\(base).txt")
+                let draft = corpus.appendingPathComponent("gold/\(language)/\(base).draft.txt")
+                if FileManager.default.fileExists(atPath: gold.path) { continue }
+                if FileManager.default.fileExists(atPath: draft.path) { print("\(language)/\(base): draft exists, waiting for correction (rename to \(base).txt)"); continue }
+                pending.append((language, url))
+            }
+        }
+        guard !pending.isEmpty else { print("nothing to draft: every recording has gold text or a draft"); return }
+        let asr = try await ASRClient.launch(helper: URL(fileURLWithPath: helper), log: nil)
+        defer { Task { await asr.shutdown() } }
+        _ = try await asr.load(backend: backend, model: try model(prefix))
+        for (language, url) in pending {
+            let samples = try AudioDecoding.decode(url, sampleRate: Double(asr.sampleRate))
+            let seconds = Double(samples.count) / Double(asr.sampleRate)
+            guard seconds <= 600 else { print("\(language)/\(url.lastPathComponent): \(Int(seconds)) s is longer than the ten-minute limit; split the recording"); continue }
+            let result = try await asr.transcribe(backend: backend, samples: samples, language: languageNames[language])
+            let lines = GoldDraft.sentences(result.text)
+            let base = url.deletingPathExtension().lastPathComponent
+            let draft = corpus.appendingPathComponent("gold/\(language)/\(base).draft.txt")
+            try FileManager.default.createDirectory(at: draft.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try (lines.joined(separator: "\n") + "\n").write(to: draft, atomically: true, encoding: .utf8)
+            print("\(language)/\(base): \(lines.count) sentences drafted by \(name) from \(String(format: "%.0f", seconds)) s → \(draft.path); correct it and rename to \(base).txt")
+        }
+    }
+
+    // MARK: --voices-from-corpus
+
+    /// Turns each speaker's reference take (raw/<lang>/reference.<ext>, sentences 1–3 of the script read as
+    /// one take) into a listening-set voice: <slot>-<lang>.wav at 24 kHz plus the exact transcript, from
+    /// gold/<lang>/reference.txt when present, else the first three scripted lines. Default slots:
+    /// en→local, es→remote, zh→generic (`--slots en:local,es:remote`).
+    static func voicesFromCorpus(arguments: [String]) throws {
+        func value(_ flag: String) -> String? { CompareCommand.value(flag, in: arguments) }
+        guard let corpusPath = value("--corpus"), let outPath = value("--out") else { throw TranslateCheckProblem("--voices-from-corpus needs --corpus <dir> --out <voices dir> [--languages en,es] [--slots en:local,es:remote]") }
+        let corpus = URL(fileURLWithPath: corpusPath), out = URL(fileURLWithPath: outPath)
+        try FileManager.default.createDirectory(at: out, withIntermediateDirectories: true)
+        var slots = ["en": "local", "es": "remote", "zh": "generic"]
+        for pair in list(value("--slots") ?? "") { let parts = pair.split(separator: ":"); if parts.count == 2 { slots[String(parts[0])] = String(parts[1]) } }
+        var made = 0
+        for language in list(value("--languages") ?? "en,es,zh") {
+            guard let slot = slots[language] else { continue }
+            let raw = corpus.appendingPathComponent("raw/\(language)")
+            guard let file = ((try? FileManager.default.contentsOfDirectory(atPath: raw.path)) ?? []).sorted().first(where: {
+                let url = raw.appendingPathComponent($0); return url.deletingPathExtension().lastPathComponent == "reference" && CorpusLoader.audioExtensions.contains(url.pathExtension.lowercased()) }) else {
+                print("\(language): no raw/\(language)/reference.<wav|m4a|…>; the listening set gets no \(slot) voice"); continue
+            }
+            let samples = try AudioDecoding.decode(raw.appendingPathComponent(file), sampleRate: 24_000)
+            let seconds = Double(samples.count) / 24_000
+            guard seconds >= 3, seconds <= 30 else { print("\(language)/\(file): \(String(format: "%.1f", seconds)) s; a reference must be 3–30 s"); continue }
+            let transcript: String
+            if let own = try? String(contentsOf: corpus.appendingPathComponent("gold/\(language)/reference.txt"), encoding: .utf8) { transcript = own }
+            else if let scripted = try? String(contentsOf: corpus.appendingPathComponent("gold/\(language)/scripted.txt"), encoding: .utf8) {
+                transcript = scripted.split(whereSeparator: \.isNewline).prefix(3).joined(separator: " ")
+            } else { throw TranslateCheckProblem("\(language): no gold/\(language)/reference.txt or scripted.txt for the reference transcript") }
+            try AudioDecoding.writeWAV(samples, sampleRate: 24_000, to: out.appendingPathComponent("\(slot)-\(language).wav"))
+            try (transcript.trimmingCharacters(in: .whitespacesAndNewlines) + "\n").write(to: out.appendingPathComponent("\(slot)-\(language).txt"), atomically: true, encoding: .utf8)
+            print("\(slot)-\(language): \(String(format: "%.1f", seconds)) s from raw/\(language)/\(file)")
+            made += 1
+        }
+        print("\(made) voice(s) under \(out.path); the folder is git-ignored")
     }
 
     // MARK: --listening-set
