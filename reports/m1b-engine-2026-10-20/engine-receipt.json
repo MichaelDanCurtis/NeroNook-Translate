@@ -1,0 +1,280 @@
+{
+  "alternating" : [
+    {
+      "audioSeconds" : 5.68,
+      "discarded" : false,
+      "firstAudioMs" : 147,
+      "framesForwardedAfterCancel" : 0,
+      "generationMs" : 1679,
+      "realTimeFactor" : 0.296,
+      "slot" : "generic"
+    },
+    {
+      "audioSeconds" : 8.4,
+      "discarded" : false,
+      "firstAudioMs" : 149,
+      "framesForwardedAfterCancel" : 0,
+      "generationMs" : 2450,
+      "realTimeFactor" : 0.292,
+      "slot" : "local"
+    },
+    {
+      "audioSeconds" : 5.28,
+      "discarded" : false,
+      "firstAudioMs" : 149,
+      "framesForwardedAfterCancel" : 0,
+      "generationMs" : 1556,
+      "realTimeFactor" : 0.295,
+      "slot" : "remote"
+    },
+    {
+      "audioSeconds" : 5.84,
+      "discarded" : false,
+      "firstAudioMs" : 145,
+      "framesForwardedAfterCancel" : 0,
+      "generationMs" : 1726,
+      "realTimeFactor" : 0.296,
+      "slot" : "generic"
+    },
+    {
+      "audioSeconds" : 8.24,
+      "discarded" : false,
+      "firstAudioMs" : 146,
+      "framesForwardedAfterCancel" : 0,
+      "generationMs" : 2392,
+      "realTimeFactor" : 0.29,
+      "slot" : "local"
+    },
+    {
+      "audioSeconds" : 5.2,
+      "discarded" : false,
+      "firstAudioMs" : 147,
+      "framesForwardedAfterCancel" : 0,
+      "generationMs" : 1572,
+      "realTimeFactor" : 0.302,
+      "slot" : "remote"
+    },
+    {
+      "audioSeconds" : 5.76,
+      "discarded" : false,
+      "firstAudioMs" : 147,
+      "framesForwardedAfterCancel" : 0,
+      "generationMs" : 1692,
+      "realTimeFactor" : 0.294,
+      "slot" : "generic"
+    },
+    {
+      "audioSeconds" : 8.08,
+      "discarded" : false,
+      "firstAudioMs" : 151,
+      "framesForwardedAfterCancel" : 0,
+      "generationMs" : 2362,
+      "realTimeFactor" : 0.292,
+      "slot" : "local"
+    },
+    {
+      "audioSeconds" : 5.04,
+      "discarded" : false,
+      "firstAudioMs" : 149,
+      "framesForwardedAfterCancel" : 0,
+      "generationMs" : 1505,
+      "realTimeFactor" : 0.299,
+      "slot" : "remote"
+    },
+    {
+      "audioSeconds" : 5.92,
+      "discarded" : false,
+      "firstAudioMs" : 149,
+      "framesForwardedAfterCancel" : 0,
+      "generationMs" : 1749,
+      "realTimeFactor" : 0.295,
+      "slot" : "generic"
+    },
+    {
+      "audioSeconds" : 8.64,
+      "discarded" : false,
+      "firstAudioMs" : 144,
+      "framesForwardedAfterCancel" : 0,
+      "generationMs" : 2523,
+      "realTimeFactor" : 0.292,
+      "slot" : "local"
+    },
+    {
+      "audioSeconds" : 5.36,
+      "discarded" : false,
+      "firstAudioMs" : 153,
+      "framesForwardedAfterCancel" : 0,
+      "generationMs" : 1608,
+      "realTimeFactor" : 0.3,
+      "slot" : "remote"
+    }
+  ],
+  "date" : "2026-10-20T17:43:43Z",
+  "discard" : {
+    "cancelAfterFirstAudioMs" : 145,
+    "discardedGenerationMs" : 1729,
+    "framesForwardedAfterCancel" : 0,
+    "nextLaneFirstAudioMsAfterCancel" : 1733,
+    "wastedMs" : 1583
+  },
+  "diskCache" : "warm (the checkpoint was read recently); cold-cache start is not measured here",
+  "engine" : "TranslateEngine",
+  "finalStats" : {
+    "activeMB" : 3063.1,
+    "cacheMB" : 128.4,
+    "peakMB" : 3939,
+    "residentMB" : 3083.4
+  },
+  "loadMs" : 466,
+  "machine" : "Mac16,5",
+  "model" : "Qwen3-TTS-12Hz-1.7B-Base-8bit-e7dd0585652209fa0d7783659aad4e8a324de11c",
+  "readyResidentMB" : 3077.2,
+  "sameSlot" : [
+    {
+      "audioSeconds" : 5.68,
+      "discarded" : false,
+      "firstAudioMs" : 147,
+      "framesForwardedAfterCancel" : 0,
+      "generationMs" : 1678,
+      "realTimeFactor" : 0.295,
+      "slot" : "generic"
+    },
+    {
+      "audioSeconds" : 5.76,
+      "discarded" : false,
+      "firstAudioMs" : 146,
+      "framesForwardedAfterCancel" : 0,
+      "generationMs" : 1695,
+      "realTimeFactor" : 0.294,
+      "slot" : "generic"
+    },
+    {
+      "audioSeconds" : 5.76,
+      "discarded" : false,
+      "firstAudioMs" : 148,
+      "framesForwardedAfterCancel" : 0,
+      "generationMs" : 1706,
+      "realTimeFactor" : 0.296,
+      "slot" : "generic"
+    },
+    {
+      "audioSeconds" : 8.56,
+      "discarded" : false,
+      "firstAudioMs" : 150,
+      "framesForwardedAfterCancel" : 0,
+      "generationMs" : 2522,
+      "realTimeFactor" : 0.295,
+      "slot" : "local"
+    },
+    {
+      "audioSeconds" : 8.48,
+      "discarded" : false,
+      "firstAudioMs" : 150,
+      "framesForwardedAfterCancel" : 0,
+      "generationMs" : 2484,
+      "realTimeFactor" : 0.293,
+      "slot" : "local"
+    },
+    {
+      "audioSeconds" : 8.24,
+      "discarded" : false,
+      "firstAudioMs" : 147,
+      "framesForwardedAfterCancel" : 0,
+      "generationMs" : 2406,
+      "realTimeFactor" : 0.292,
+      "slot" : "local"
+    },
+    {
+      "audioSeconds" : 5.36,
+      "discarded" : false,
+      "firstAudioMs" : 150,
+      "framesForwardedAfterCancel" : 0,
+      "generationMs" : 1591,
+      "realTimeFactor" : 0.297,
+      "slot" : "remote"
+    },
+    {
+      "audioSeconds" : 5.6,
+      "discarded" : false,
+      "firstAudioMs" : 150,
+      "framesForwardedAfterCancel" : 0,
+      "generationMs" : 1669,
+      "realTimeFactor" : 0.298,
+      "slot" : "remote"
+    },
+    {
+      "audioSeconds" : 5.04,
+      "discarded" : false,
+      "firstAudioMs" : 148,
+      "framesForwardedAfterCancel" : 0,
+      "generationMs" : 1522,
+      "realTimeFactor" : 0.302,
+      "slot" : "remote"
+    }
+  ],
+  "spawnToReadyMs" : 489,
+  "stress" : {
+    "errors" : 0,
+    "maxFramesForwardedAfterCancel" : 0,
+    "maxNextLaneFirstAudioMsAfterCancel" : 2729,
+    "maxWastedMs" : 2575,
+    "meanNextLaneFirstAudioMsAfterCancel" : 1931.5,
+    "note" : "Each round cancels lane A at its first chunk and queues lane B before A finishes. Frames after cancel count only chunks already in flight when the cancel landed. Audio is checked for presence, duration and RTF, not listened to.",
+    "rounds" : 100,
+    "roundsWithAudioAfterCancel" : 0,
+    "totalSeconds" : 388
+  },
+  "switchOverheadFirstAudioMs" : -0.4,
+  "voices" : {
+    "generic" : {
+      "language" : "english",
+      "prepareMs" : 50,
+      "referenceSHA256" : "9ac161615b1baa9dc4d028dd446052e11efa56af79ef6d881039c42342dba920",
+      "residentMBAfter" : 3066.3,
+      "seconds" : 8.37
+    },
+    "local" : {
+      "language" : "spanish",
+      "prepareMs" : 35,
+      "referenceSHA256" : "bf4e2d30b50043303a930d8de1e4f445dd185564aced5bd81e67cdced0cbad81",
+      "residentMBAfter" : 3069.2,
+      "seconds" : 7.85
+    },
+    "remote" : {
+      "language" : "english",
+      "prepareMs" : 35,
+      "referenceSHA256" : "668a86ec4bc402dddfdd1151d09bb438c3548af7c810a9dbaa6172cbb6950a15",
+      "residentMBAfter" : 3070.3,
+      "seconds" : 8.57
+    }
+  },
+  "warmup" : [
+    {
+      "audioSeconds" : 6.08,
+      "discarded" : false,
+      "firstAudioMs" : 161,
+      "framesForwardedAfterCancel" : 0,
+      "generationMs" : 1822,
+      "realTimeFactor" : 0.3,
+      "slot" : "generic"
+    },
+    {
+      "audioSeconds" : 8.56,
+      "discarded" : false,
+      "firstAudioMs" : 154,
+      "framesForwardedAfterCancel" : 0,
+      "generationMs" : 2511,
+      "realTimeFactor" : 0.293,
+      "slot" : "local"
+    },
+    {
+      "audioSeconds" : 5.04,
+      "discarded" : false,
+      "firstAudioMs" : 152,
+      "framesForwardedAfterCancel" : 0,
+      "generationMs" : 1499,
+      "realTimeFactor" : 0.297,
+      "slot" : "remote"
+    }
+  ]
+}

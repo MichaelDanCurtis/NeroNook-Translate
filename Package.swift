@@ -13,12 +13,15 @@ let package = Package(
     targets: [
         // Foundation-only session logic: schema, journal, revisions, scheduler, consent, captions, evidence.
         .target(name: "TranslateCore"),
-        // Host-free checks that exercise the real SDK validators and Core replay.
+        // Client side of the engine protocol: process supervision, framing, reference decoding.
+        .target(name: "TranslateEngineClient"),
+        // Host-free checks that exercise the real SDK validators, Core replay and the engine receipts.
         .executableTarget(
             name: "TranslateCheck",
-            dependencies: ["TranslateCore", .product(name: "NookPluginSDK", package: "NookPluginSDK")]
+            dependencies: ["TranslateCore", "TranslateEngineClient", .product(name: "NookPluginSDK", package: "NookPluginSDK")]
         ),
         .testTarget(name: "TranslateCoreTests", dependencies: ["TranslateCore"]),
+        .testTarget(name: "TranslateEngineClientTests", dependencies: ["TranslateEngineClient"]),
         .testTarget(
             name: "TranslatePluginTests",
             dependencies: [.product(name: "NookPluginSDK", package: "NookPluginSDK")]

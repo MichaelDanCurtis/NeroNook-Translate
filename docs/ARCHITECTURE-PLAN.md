@@ -199,7 +199,7 @@ Why the parts are split this way:
   - Length-prefixed frames: a JSON header plus an optional binary Float32 payload. This avoids Voice's 33% base64 overhead and its 8 KB request ceiling.
   - Versioned `hello`/`ready`, request IDs, an explicit `cancel {id}`, a per-lane `flush`, `prepareVoice {slot, reference, transcript}` and health/heartbeat messages.
   - Strict validation in the style of `QwenSpeechWire`, copied with provenance.
-  - Protocol frames travel on a **dedicated file descriptor**, not stdout, because the library prints to stdout.
+  - Protocol frames travel on a **private duplicate of stdout** taken before anything loads, with stdout itself pointed at stderr, because the library prints to stdout.
 - **Optional second helper.** A separate `TranslateMT` helper is needed only if Hy‑MT2 is chosen **and** no Swift port exists (§2.3, D‑5).
 
 ### 2.2 Audio routing
@@ -354,7 +354,7 @@ This is the central design and the point where Translate departs most from Voice
 
 - **Stop or Mute** acts in the app at that moment: it bumps the lane epoch, stops the player node or feeder writes, and releases the driver lease. Silence does not depend on the model.
 - **The engine does not cancel a running generation (D‑8, decided Oct 19).** The library's inner task finishes asynchronously and unobservably after a cancel, so starting the next generation could overlap it. Instead the engine receives `cancel {id}` and **discards** that unit's remaining audio while the generation runs to completion. The executor is reclaimed when the stream finishes, with no race and no library change.
-  - **Cost:** the GPU time left in the discarded unit, at most that unit's generation time (about 0.33 × its spoken length, so under 3 s for a sentence-sized unit). It is paid only after Stop, Mute or flush.
+  - **Cost:** the GPU time left in the discarded unit, at most that unit's generation time (about 0.33 × its spoken length, so under 3 s for a sentence-sized unit). It is paid only after Stop, Mute or flush. *Measured October 20 (M1b receipt): 1.6–2.4 s of waste on ≈7 s utterances at RTF 0.29, with the other lane's first audio 1.9 s after the cancel on average; voice switching itself cost 0.1 ms.*
   - Queued units that have not started are dropped at once.
   - No worker restart and no model re-verification is involved.
   - **Fallback:** if the M1b receipts show the waste delays the other lane noticeably, add a small pinned mlx-audio-swift patch that exposes generation completion, with provenance, and offer it upstream. The same patch would carry x‑vector-only if experiment E3 needs it.

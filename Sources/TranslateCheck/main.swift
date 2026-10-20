@@ -15,6 +15,7 @@ func argument(after flag: String) -> String? {
     return CommandLine.arguments[index + 1]
 }
 
+setvbuf(stdout, nil, _IOLBF, 0)   // progress lines reach a log file as they happen
 let arguments = CommandLine.arguments.dropFirst()
 do {
     if arguments.contains("--manifest") {
@@ -29,6 +30,27 @@ do {
         try manifest.validate()
         guard manifest.launchMode == "application" else { throw ModuleProblem("Translate must run in application launch mode.") }
         print("OK manifest \(manifest.id) \(manifest.version)")
+    } else if let enginePath = argument(after: "--engine") {
+        // TranslateCheck --engine <TranslateEngine> --model <dir> --voices <dir> --out <dir> [--stress N]
+        // Voices dir holds <slot>-<lang>.wav + .txt for slots generic, local, remote (see Fixtures/Voices).
+        guard let modelPath = argument(after: "--model"), let voicesPath = argument(after: "--voices"), let outPath = argument(after: "--out") else {
+            throw TranslateProblem("Usage: --engine <binary> --model <dir> --voices <dir> --out <dir> [--stress N]")
+        }
+        let voicesDirectory = URL(fileURLWithPath: voicesPath)
+        func voice(_ slot: String, _ file: String, language: String, text: String) throws -> EngineBench.Voice {
+            let transcript = try String(contentsOf: voicesDirectory.appendingPathComponent(file + ".txt"), encoding: .utf8).trimmingCharacters(in: .whitespacesAndNewlines)
+            return EngineBench.Voice(slot: slot, reference: voicesDirectory.appendingPathComponent(file + ".wav"), transcript: transcript, language: language, text: text)
+        }
+        let english = "I think we should confirm the delivery date first, and then look at the budget together before anyone commits to it."
+        let spanish = "Creo que deberíamos confirmar primero la fecha de entrega, y después revisar el presupuesto juntos antes de que alguien se comprometa."
+        let voices = [
+            try voice("generic", "generic-en", language: "English", text: english),
+            try voice("local", "local-en", language: "Spanish", text: spanish),
+            try voice("remote", "remote-es", language: "English", text: english)
+        ]
+        let rounds = Int(argument(after: "--stress") ?? "") ?? 100
+        try await EngineBench.execute(engine: URL(fileURLWithPath: enginePath), model: URL(fileURLWithPath: modelPath), voices: voices,
+                                      out: URL(fileURLWithPath: outPath), stressRounds: rounds)
     } else if let path = argument(after: "--replay") {
         let data = try Data(contentsOf: URL(fileURLWithPath: path))
         guard data.count <= 256 * 1024 * 1024 else { throw TranslateProblem("Journal exceeds the check limit.") }
