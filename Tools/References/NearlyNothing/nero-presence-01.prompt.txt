@@ -1,0 +1,11 @@
+Tool: built-in image_gen.imagegen
+Input reference: exec-c48584cc-3064-4325-9dd4-f61f6f04a857.png (selected pearl orb with dotted hair)
+Output: nero-presence-01.png
+Date: 2026-10-16
+
+Use case: precise-object-edit.
+Make ONE subtle color refinement to the supplied approved Nero identity sheet. Preserve the entire composition, all lettering, interface, dark background, soft friendly orb shape and wispy folds, and especially the fine flowing HAIR MADE OF MANY TINY SEPARATE DOTS. Do not redesign any geometry or simplify the dotted hair.
+
+Add a FEW DELICATE STREAKS OF COLOR WITHIN THE PEARL ORB, consistently in the hero, the app emblem, and four state miniatures. The body remains predominantly opalescent pearl-white with warm champagne light. Thread two or three narrow, translucent softly feathered ribbons of very pale peach/rose, a whisper of lavender, and a very faint ice blue through its existing inner wispy glass folds. The colors are like subtle light refracting inside mother-of-pearl, about 10–15 percent of the overall visible orb, softly integrated with the translucent material. They should be visible on a close look without becoming loud or saturated. Follow the existing fluid curves, with tasteful asymmetry. Keep the dotted hair its current gentle pearl/champagne tone.
+
+No all-over rainbow gradient, no colored background or colored interface, no vivid cyan/purple neon, no rainbow Siri ball, no solid painted color bands, no new sparks, no fierce fire. Maintain the inviting quiet Nearly Nothing aesthetic, warm soft high-end Apple-like glass quality and faithful layout. This is the approved previous version with only slight opalescent color streaks added within the orb.

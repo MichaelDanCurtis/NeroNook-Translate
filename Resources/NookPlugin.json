@@ -1,0 +1,18 @@
+{
+  "id": "cafe.nero.plugin.translate",
+  "name": "Translate",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "summary": "Live two-way translated calls. Each person hears the other in a voice that sounds like them, speaking the other language. Captions for both directions, and an optional saved meeting with original audio, a bilingual transcript and evidence-linked notes. All processing stays on this Mac.",
+  "capabilities": [
+    "Translates a one-to-one call in both directions with recognizable voices",
+    "Shows original and translated captions for both people",
+    "Optionally saves original audio, a bilingual transcript and notes that cite their sources",
+    "Owns its own audio routing, models, voice profiles and meeting storage"
+  ],
+  "launchMode": "application",
+  "icon": {
+    "symbol": "waveform.and.mic",
+    "color": "5EC8B8"
+  }
+}

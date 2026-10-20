@@ -1,0 +1,11 @@
+.build/
+build/
+.swiftpm/
+.DS_Store
+__pycache__/
+*.app/
+*.dSYM/
+*.xcarchive/
+.env
+.env.*
+!.env.example

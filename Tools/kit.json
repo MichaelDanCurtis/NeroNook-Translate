@@ -1,0 +1,8 @@
+{
+  "version": "0.1.9",
+  "sourceHostVersion": "0.34.24",
+  "starterMinimumHost": "0.20.1",
+  "apiVersion": 1,
+  "distribution": "local-preview",
+  "license": "MIT"
+}
