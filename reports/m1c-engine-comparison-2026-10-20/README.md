@@ -8,6 +8,25 @@ This receipt covers the harness and the approved acquisitions. **Nothing is scor
 
 On the owner's re-recorded scripted English take (25 sentences, one speaker): Apple SpeechTranscriber 9.5% token error rate (9.7% on the call-codec copy), 41% of names; Qwen3‑ASR 1.7B with a names list 6.4% (7.0%), 91%; Qwen 1.7B without 7.2%, 0.6B 8.6–8.9%, Nemotron 10.3%; numbers 88–94% and dates 67–78% for everyone (two shared misses). The owner's call: **Apple by default, with an optional in-app Qwen3‑ASR 1.7B pack**, and Apple Translation by default with the Qwen text model joining the pack only if the review sheets favour it (plan §8, D‑4/D‑5). The comparison continues to characterize both paths; the pack's in-app wording waits for Apple's own names list to be measured.
 
+## The first real run (owner's English takes, evening of October 20)
+
+Scripted take re-recorded with the auto-stopping page (139.9 s, 25 sentences), a 96 s natural take and a 17.8 s reference take; `es-MX` installed. The full run (`scripts/run-m1c.sh`: every candidate, paced, under load, codec copies, listening set with the owner's reference) took about 75 minutes. Its natural rows are not valid (the transcript on disk was the first take's draft; the corrected one is pending), so `en-scripted-report.md` is the scripted take only; `tts-summary-owner-voice.md` is the listening run. Run folders are git-ignored (they hold natural speech); these two files are the curated extract.
+
+| Measure (scripted English take) | Apple SpeechTranscriber | Nemotron 3.5 | Qwen3‑ASR 0.6B | Qwen3‑ASR 1.7B | Qwen3‑ASR 1.7B + names list |
+| --- | --- | --- | --- | --- | --- |
+| Token error rate, clean / call codec | 9.5% / 9.7% | 10.3% / 10.3% | 8.9% / 8.9% | 7.2% / 7.8% | **6.4% / 7.0%** |
+| Names / numbers / dates right | 41% / 88% / 78% | 36% / 94% / 67% | 45% / 94% / 78% | 50% / 94% / 78% | **91%** / 94% / 78% |
+| Paced: final text after the phrase, p90 (TTS running) | 90 ms (81) | 71 ms (71) | 211 ms (168) | 313 ms (341) | – |
+| Paced: first partial after the phrase starts | 3.3 s | 1.7 s | 1.1 s (re-run every 1 s, 99 ms each) | 1.2 s (147 ms each) | – |
+| Whole-clip error rate while TTS runs | unchanged | unchanged | unchanged | unchanged | unchanged |
+| Resident memory | system service | 0.9 GB | 0.8 GB | 2.5 GB | 2.5 GB |
+
+With the amended sentence 9 and properly cased names (a second, short run after the fix): Apple 8.9% and 5/11 names **with or without its contextual strings**; Qwen 1.7B 6.7% alone, **5.0% and 10/11 names with the list**. Apple's contextual strings showed no effect in two wirings (file input with the transcription preset; streaming with volatile results; `setContext` before start). The route Apple documents for vocabulary, a **custom language model** from the names (`SFCustomLanguageModelData` phrase counts, prepared in 0.6 s) as a `DictationTranscriber` content hint, does work: names 5/11 → 8/11 (73%), error rate 12.5% → 10.3%. But `DictationTranscriber` starts from a worse base than `SpeechTranscriber` (12.5% against 8.9%), so Apple's best is either 8.9% with 45% of names or 10.3% with 73%, against Qwen 1.7B's 5.0% with 91%. The pack's claim "better with names and numbers" stands on either reading.
+
+Translation timing per line, 25 lines en→es, alone and with TTS running: Apple 422 / 510 ms; Hy‑MT2 178 / 228 ms; Qwen3.5‑2B in the engine 240 / **2,272 ms** (it queues behind the synthesis unit). Meaning is unrated until the review sheets are read. Qwen TTS during the under-load passes: RTF 0.32–0.35, first audio 161–170 ms.
+
+Listening set with the owner's own reference (17.8 s, English only so far): first audio and RTF at 0.32 s / 0.16 s intervals: 1.7B 8‑bit 202 / 155 ms, RTF 0.32; 0.6B 8‑bit 139 / 116 ms, RTF 0.34; 1.7B bf16 619 / 293 ms, **RTF 1.7** (unusable live in this runtime). Voice preparation 69–93 ms. The 15 clips wait for listeners (item 11); the "under recognition" pass was too short for Nemotron to complete a pass for the 8‑bit variants, so those rows are effectively alone.
+
 ## What exists now
 
 - `Engine/` builds a second helper, **`TranslateASR`** (Nemotron 3.5 streaming sessions, Qwen3‑ASR phrase mode with an optional `context` name list, Qwen3‑ForcedAligner), and **`TranslateEngine`** gained `loadTranslator`/`translate` for a Qwen text model next to the TTS model. Both share `EngineProtocol` (the frame codec) and the client's sandbox. `docs/PROTOCOL.md` documents both.

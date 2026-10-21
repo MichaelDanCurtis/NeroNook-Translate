@@ -143,6 +143,10 @@ enum CompareCommand {
                     if backend == "nemotron" { pacedRecognizers.append(NemotronPaced(client: asr, chunkMs: chunkMs, languageNames: languageNames)) }
                     else { pacedRecognizers.append(PhraseModePaced(name: name, client: asr, backend: backend, languageNames: languageNames, useContext: false)) }
                 }
+            case "apple-dictation":
+                let locales = ["en": "en-US", "es": spanishLocale, "zh": "zh-CN"]
+                recognizers.append(AppleDictationRecognizer(locales: locales))
+                recognizers.append(AppleDictationRecognizer(locales: locales, useNames: true))
             case "apple":
                 let locales = ["en": "en-US", "es": spanishLocale, "zh": "zh-CN"]
                 recognizers.append(AppleRecognizer(locales: locales))

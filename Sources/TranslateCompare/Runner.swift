@@ -134,8 +134,10 @@ public enum CompareRunner {
         return info
     }
 
+    /// The names list given to context-taking recognizers and as the translators' glossary: the display
+    /// form (cased, accented) when the check has one, else its first accepted form.
     static func names(from checks: [Check]) -> String {
-        checks.filter { $0.category == "name" }.compactMap { $0.accept.first }.joined(separator: ", ")
+        checks.filter { $0.category == "name" }.compactMap { $0.display ?? $0.accept.first }.joined(separator: ", ")
     }
     static func mean(_ values: [Int]) -> Int { values.isEmpty ? 0 : values.reduce(0, +) / values.count }
     static func percentile(_ values: [Int], _ p: Double) -> Int {
@@ -290,7 +292,7 @@ public enum CompareRunner {
                     var ok: [Int] = []
                     for (index, line) in lines.enumerated() {
                         let context = translator.supportsContext ? Array(lines[max(0, index - options.contextWindow)..<index]) : []
-                        let glossary = item.checks.filter { $0.category == "name" }.compactMap { $0.accept.first }
+                        let glossary = item.checks.filter { $0.category == "name" }.compactMap { $0.display ?? $0.accept.first }
                         do {
                             let result = try await translator.translate(line, from: pair.from, to: pair.to, context: context, glossary: glossary)
                             rows.append(TranslationRow(translator: translator.name, item: item.id, from: pair.from, to: pair.to, line: index + 1, underLoad: underLoad, source: line, output: result.text,

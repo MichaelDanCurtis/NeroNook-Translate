@@ -7,7 +7,8 @@
       "sentence": 1,
       "accept": [
         "michael curtis"
-      ]
+      ],
+      "display": "Michael Curtis"
     },
     {
       "category": "name",
@@ -15,7 +16,8 @@
       "accept": [
         "ana beltran",
         "ana beltrán"
-      ]
+      ],
+      "display": "Ana Beltrán"
     },
     {
       "category": "name",
@@ -23,7 +25,8 @@
       "accept": [
         "seville",
         "sevilla"
-      ]
+      ],
+      "display": "Seville"
     },
     {
       "category": "number",
@@ -150,6 +153,7 @@
         "müller and sons",
         "mueller and sons"
       ],
+      "display": "Müller and Sons",
       "sentence": 9
     },
     {
@@ -186,7 +190,8 @@
       "sentence": 11,
       "accept": [
         "priya raghunathan"
-      ]
+      ],
+      "display": "Priya Raghunathan"
     },
     {
       "category": "name",
@@ -194,7 +199,8 @@
       "accept": [
         "tomas oliveira",
         "tomás oliveira"
-      ]
+      ],
+      "display": "Tomás Oliveira"
     },
     {
       "category": "number",
@@ -258,7 +264,8 @@
         "gate b12",
         "gate b 12",
         "gate b twelve"
-      ]
+      ],
+      "display": "Gate B12"
     },
     {
       "category": "negation",
@@ -324,7 +331,8 @@
       "sentence": 19,
       "accept": [
         "keiko nakamura"
-      ]
+      ],
+      "display": "Keiko Nakamura"
     },
     {
       "category": "date",
@@ -373,7 +381,8 @@
       "sentence": 23,
       "accept": [
         "mexico city"
-      ]
+      ],
+      "display": "Mexico City"
     },
     {
       "category": "name",
@@ -381,14 +390,16 @@
       "accept": [
         "sao paulo",
         "são paulo"
-      ]
+      ],
+      "display": "São Paulo"
     },
     {
       "category": "name",
       "sentence": 23,
       "accept": [
         "dublin"
-      ]
+      ],
+      "display": "Dublin"
     },
     {
       "category": "correction",

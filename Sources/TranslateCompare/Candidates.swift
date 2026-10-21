@@ -98,6 +98,61 @@ public struct AppleRecognizer: Recognizer {
     }
 }
 
+/// Apple DictationTranscriber, file input, final results only. With `useNames`, the names list becomes a
+/// custom language model (SFCustomLanguageModelData phrase counts, prepared once per call) and goes in as
+/// the `customizedLanguage` content hint: the route Apple documents for vocabulary such as names.
+public struct AppleDictationRecognizer: Recognizer {
+    public let name: String
+    public let languages: Set<String>
+    let locales: [String: String]
+    let useNames: Bool
+    public init(locales: [String: String], useNames: Bool = false) {
+        self.locales = locales; self.languages = Set(locales.keys); self.useNames = useNames
+        self.name = useNames ? "apple-dictation+names" : "apple-dictation"
+    }
+
+    static func customModel(names: [String], locale: Locale) async throws -> (SFSpeechLanguageModel.Configuration, Int) {
+        let started = ProcessInfo.processInfo.systemUptime
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("translate-custom-lm-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        let data = SFCustomLanguageModelData(locale: locale, identifier: "cafe.nero.plugin.translate.names", version: "1.0") { }
+        for phrase in names { SFCustomLanguageModelData.PhraseCount(phrase: phrase, count: 20).insert(data: data) }
+        let training = folder.appendingPathComponent("names.bin")
+        try await data.export(to: training)
+        let configuration = SFSpeechLanguageModel.Configuration(languageModel: folder.appendingPathComponent("names.lm"))
+        try await SFSpeechLanguageModel.prepareCustomLanguageModel(for: training, clientIdentifier: "cafe.nero.plugin.translate", configuration: configuration)
+        return (configuration, Int(((ProcessInfo.processInfo.systemUptime - started) * 1000).rounded()))
+    }
+
+    public func recognize(_ item: CorpusItem, context: String?) async throws -> RecognizedText {
+        guard let localeID = locales[item.language] else { throw EngineClientProblem("No Apple locale for \(item.language).") }
+        let locale = Locale(identifier: localeID)
+        var hints: Set<DictationTranscriber.ContentHint> = []
+        if useNames, let context, !context.isEmpty {
+            let names = context.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
+            let (configuration, ms) = try await Self.customModel(names: names, locale: locale)
+            FileHandle.standardError.write(Data("apple-dictation: custom language model with \(names.count) names prepared in \(ms) ms\n".utf8))
+            hints.insert(.customizedLanguage(modelConfiguration: configuration))
+        }
+        let transcriber = DictationTranscriber(locale: locale, contentHints: hints, transcriptionOptions: [], reportingOptions: [], attributeOptions: [])
+        let status = await AssetInventory.status(forModules: [transcriber])
+        let analyzer = SpeechAnalyzer(modules: [transcriber])
+        let file = try AVAudioFile(forReading: item.audio)
+        let started = ProcessInfo.processInfo.systemUptime
+        let collector = Task { () throws -> [String] in
+            var finals: [String] = []
+            for try await result in transcriber.results where result.isFinal { finals.append(String(result.text.characters)) }
+            return finals
+        }
+        do { try await analyzer.start(inputAudioFile: file, finishAfterFile: true) } catch {
+            collector.cancel()
+            throw EngineClientProblem("Apple dictation failed for \(localeID) (asset status \(status)): \(error)")
+        }
+        let finals = try await collector.value
+        return RecognizedText(text: finals.joined(separator: " "), ms: Int(((ProcessInfo.processInfo.systemUptime - started) * 1000).rounded()), detectedLanguage: nil)
+    }
+}
+
 // MARK: Translators
 
 /// Apple Translation with installed language packs: one prepared session per language pair, kept on the

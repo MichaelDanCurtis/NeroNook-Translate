@@ -1,10 +1,13 @@
 import Foundation
 
-/// One check the scoring looks for in a transcript: any accepted form counts.
+/// One check the scoring looks for in a transcript: any accepted form counts. `display` is the form a
+/// names list should carry (proper casing and accents), when the accepted forms are scoring spellings.
 public struct Check: Codable, Sendable {
     public let category: String
     public let sentence: Int?
     public let accept: [String]
+    public var display: String?
+    public init(category: String, sentence: Int?, accept: [String], display: String? = nil) { self.category = category; self.sentence = sentence; self.accept = accept; self.display = display }
 }
 
 /// One recording with its reference text and checks.

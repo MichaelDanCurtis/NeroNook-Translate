@@ -4,7 +4,7 @@
 
 ## Status, October 20 (evening)
 
-- **Decision taken (D‑4, D‑5):** Apple SpeechTranscriber and Apple Translation by default; an optional in-app pack with Qwen3‑ASR 1.7B for users who want better names and numbers; the Qwen text model joins the pack only if the review sheets favour it. Basis: the owner's scripted English take (Apple 9.5% / names 41%; Qwen 1.7B with a names list 6.4% / 91%). Still to measure before the pack's description is written: Apple with its own names list, the natural take, Spanish, and the translation review sheets.
+- **Decision taken (D‑4, D‑5):** Apple SpeechTranscriber and Apple Translation by default; an optional in-app pack with Qwen3‑ASR 1.7B for users who want better names and numbers; the Qwen text model joins the pack only if the review sheets favour it. Basis: the owner's scripted English take (Apple 9.5% / names 41%; Qwen 1.7B with a names list 6.4% / 91%). Measured since: Apple's `SpeechTranscriber` with properly cased contextual strings showed no change (8.9%, 5/11 names); a custom language model through `DictationTranscriber` lifted names to 8/11 at 10.3%; Qwen 1.7B with the same list reached 5.0% and 10/11. The pack's description reads "better with names and numbers". Still to come: the natural take (corrected transcript), Spanish, the translation review sheets, and listeners for the 15 clips made with the owner's reference.
 
 - **Approved and done (items 6–9):** the five pinned downloads, the Mandarin Apple speech asset, the Nemotron and bf16 imports, and Hy‑MT2 through Voice's interpreter environment (read-only). Hashes and receipts are in `PROVENANCE.md` and `reports/m1c-engine-comparison-2026-10-20/`. The Spanish Apple asset waits on item 1 (variety).
 - **Harness built, independently reviewed and smoke-tested** on the synthetic fixtures with every candidate and mode; see the receipt. Every pass records CPU time and footprint per process, MLX counters and GPU utilization (no privileges); energy and thermal behaviour still need `powermetrics` (root) and wait for Milestone 3. Three things it taught: Qwen3‑ASR and the aligner need a one-time `--prepare-model` run (the runtime writes `tokenizer.json` into the model folder, which the sandbox then keeps read-only); Apple Translation reports installed packs as `supported` to any binary that SwiftPM's build system stamps with the deployment target as SDK, fixed with an explicit linker platform version; the Qwen3.5‑2B checkpoint is multimodal and its text model loads alone.
@@ -83,6 +83,16 @@ It derives the scripted gold, installs the Apple speech asset for the chosen Spa
 4. Recordings arrive; `scripts/run-m1c.sh <variety>` makes codec copies and transcript drafts; speakers correct the drafts; run again.
 5. Comparison runs: EN↔ES first (both directions), then TTS variants, then EN↔ZH when the Mandarin set exists. Receipts under `reports/m1c-…`.
 6. ~~D‑4 and D‑5 decided from the receipts~~ (taken October 20; the receipts now describe the pack); Milestone 1d opens.
+
+## To come back to (noted October 20, not scheduled)
+
+1. **A names-correction pass after recognition:** match each committed phrase against the participant names list by edit distance and sound, so a misheard name is restored whichever engine produced it. Measure it first as harness candidates (`apple-speech+namefix`, `qwen3asr-1.7b+namefix`) with the existing name checks; if it lifts the built-in path toward Qwen's 91%, the pack's claim narrows to accuracy on everything else.
+2. **Which Apple module the built-in path uses for names:** `SpeechTranscriber` (8.9%, 45% of names) or `DictationTranscriber` with a custom language model (10.3%, 73%); decide in the live tests, or make 1 moot.
+3. **Apple's first partial** (3.3 s into an English phrase, end of clip for Spanish): try the live preset and reporting options before captions are judged on it.
+4. **The Qwen text model's own process**, if the review sheets put it in the pack (inside the TTS engine it queues to 2 s per line under load).
+5. **The bf16 TTS checkpoint's speed** (RTF 1.7 against 0.29 for 8‑bit): a runtime path to look at before bf16 is judged by ear.
+6. **Energy and thermal readings** need `powermetrics` (root); Milestone 3.
+7. **The listening set's "under recognition" pass** is too short for the 8‑bit variants to be under load; lengthen it or loop more clips.
 
 ## Exit (from the plan)
 
