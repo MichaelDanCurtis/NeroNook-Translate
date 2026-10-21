@@ -1,0 +1,35 @@
+{
+  "9": {
+    "note": "Read as 'thirteenth of September' on October 20, 2026 (owner confirmed); the script says thirtieth.",
+    "text": "The invoice from Müller and Sons is due on the thirteenth of September, two thousand twenty-six.",
+    "checks": [
+      {
+        "category": "name",
+        "accept": [
+          "muller and sons",
+          "müller and sons",
+          "mueller and sons"
+        ]
+      },
+      {
+        "category": "date",
+        "accept": [
+          "13th of september",
+          "thirteenth of september",
+          "september 13",
+          "september 13th",
+          "13 september"
+        ]
+      },
+      {
+        "category": "date",
+        "accept": [
+          "2026",
+          "two thousand twenty six",
+          "two thousand and twenty six",
+          "twenty twenty six"
+        ]
+      }
+    ]
+  }
+}

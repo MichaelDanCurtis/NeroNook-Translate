@@ -2,52 +2,413 @@
   "language": "en",
   "note": "Each check passes when any accepted form appears in the normalized transcript (lowercase, punctuation removed, digits and number words both tried). Categories feed the per-category scores in the receipt.",
   "checks": [
-    {"category": "name", "sentence": 1, "accept": ["michael curtis"]},
-    {"category": "name", "sentence": 1, "accept": ["ana beltran", "ana beltrán"]},
-    {"category": "name", "sentence": 1, "accept": ["seville", "sevilla"]},
-    {"category": "number", "sentence": 2, "accept": ["1.5 million", "one point five million"]},
-    {"category": "number", "sentence": 2, "accept": ["1.2", "one point two"]},
-    {"category": "date", "sentence": 3, "accept": ["10:30", "ten thirty", "10 30"]},
-    {"category": "date", "sentence": 3, "accept": ["thursday the 23rd", "thursday the twenty third", "thursday the twenty-third", "thursday 23rd", "thursday 23"]},
-    {"category": "number", "sentence": 4, "accept": ["1,200", "1200", "one thousand two hundred", "twelve hundred"]},
-    {"category": "date", "sentence": 4, "accept": ["4th of march", "fourth of march", "march 4", "march 4th", "4 march"]},
-    {"category": "negation", "sentence": 5, "accept": ["don't think we should sign", "do not think we should sign"]},
-    {"category": "negation", "sentence": 5, "accept": ["certain we shouldn't", "certain we should not"]},
-    {"category": "number", "sentence": 6, "accept": ["0755", "0 7 5 5", "zero seven five five", "07 55"]},
-    {"category": "number", "sentence": 6, "accept": ["121 334", "121334", "one two one three three four", "1 2 1 3 3 4"]},
-    {"category": "negation", "sentence": 7, "accept": ["never agreed to a discount"]},
-    {"category": "correction", "sentence": 8, "accept": ["tuesday not thursday", "tuesday, not thursday"]},
-    {"category": "date", "sentence": 8, "accept": ["the 15th", "the fifteenth", "15th", "fifteenth"]},
-    {"category": "name", "sentence": 9, "accept": ["muller and sons", "müller and sons", "mueller and sons"]},
-    {"category": "date", "sentence": 9, "accept": ["30th of september", "thirtieth of september", "september 30", "september 30th", "30 september"]},
-    {"category": "date", "sentence": 9, "accept": ["2026", "two thousand twenty six", "two thousand and twenty six", "twenty twenty six"]},
-    {"category": "negation", "sentence": 10, "accept": ["isn't finished", "is not finished"]},
-    {"category": "name", "sentence": 11, "accept": ["priya raghunathan"]},
-    {"category": "name", "sentence": 11, "accept": ["tomas oliveira", "tomás oliveira"]},
-    {"category": "number", "sentence": 12, "accept": ["minus 4 degrees", "minus four degrees", "-4 degrees", "4 degrees below"]},
-    {"category": "number", "sentence": 12, "accept": ["three nights", "3 nights"]},
-    {"category": "number", "sentence": 13, "accept": ["45%", "45 percent", "forty five percent", "forty-five percent"]},
-    {"category": "number", "sentence": 13, "accept": ["40", "forty"]},
-    {"category": "negation", "sentence": 14, "accept": ["can't make it before noon", "cannot make it before noon", "can not make it before noon"]},
-    {"category": "date", "sentence": 15, "accept": ["6:55", "six fifty five", "six fifty-five", "6 55"]},
-    {"category": "name", "sentence": 15, "accept": ["gate b12", "gate b 12", "gate b twelve"]},
-    {"category": "negation", "sentence": 16, "accept": ["hasn't moved", "has not moved"]},
-    {"category": "date", "sentence": 16, "accept": ["1st of december", "first of december", "december 1", "december 1st", "december first"]},
-    {"category": "number", "sentence": 17, "accept": ["3.4.1", "three point four point one"]},
-    {"category": "number", "sentence": 17, "accept": ["3.3", "three point three"]},
-    {"category": "number", "sentence": 18, "accept": ["eleven open issues", "11 open issues"]},
-    {"category": "number", "sentence": 18, "accept": ["only two are blockers", "only 2 are blockers"]},
-    {"category": "negation", "sentence": 19, "accept": ["don't ship anything", "do not ship anything"]},
-    {"category": "name", "sentence": 19, "accept": ["keiko nakamura"]},
-    {"category": "date", "sentence": 20, "accept": ["11:15", "eleven fifteen", "11 15"]},
-    {"category": "number", "sentence": 20, "accept": ["eight of the twelve", "8 of the 12"]},
-    {"category": "number", "sentence": 21, "accept": ["twelve dollars", "$12", "12 dollars"]},
-    {"category": "number", "sentence": 21, "accept": ["below ten", "below 10"]},
-    {"category": "correction", "sentence": 22, "accept": ["lisbon not lisburn", "lisbon, not lisburn"]},
-    {"category": "name", "sentence": 23, "accept": ["mexico city"]},
-    {"category": "name", "sentence": 23, "accept": ["sao paulo", "são paulo"]},
-    {"category": "name", "sentence": 23, "accept": ["dublin"]},
-    {"category": "correction", "sentence": 24, "accept": ["206 not 216", "206, not 216", "two hundred and six not two hundred and sixteen", "two hundred and six, not two hundred and sixteen", "two hundred six not two hundred sixteen"]},
-    {"category": "correction", "sentence": 25, "accept": ["probably friday", "probably friday, possibly monday"]}
-  ]
+    {
+      "category": "name",
+      "sentence": 1,
+      "accept": [
+        "michael curtis"
+      ]
+    },
+    {
+      "category": "name",
+      "sentence": 1,
+      "accept": [
+        "ana beltran",
+        "ana beltrán"
+      ]
+    },
+    {
+      "category": "name",
+      "sentence": 1,
+      "accept": [
+        "seville",
+        "sevilla"
+      ]
+    },
+    {
+      "category": "number",
+      "sentence": 2,
+      "accept": [
+        "1.5 million",
+        "one point five million"
+      ]
+    },
+    {
+      "category": "number",
+      "sentence": 2,
+      "accept": [
+        "1.2",
+        "one point two"
+      ]
+    },
+    {
+      "category": "date",
+      "sentence": 3,
+      "accept": [
+        "10:30",
+        "ten thirty",
+        "10 30"
+      ]
+    },
+    {
+      "category": "date",
+      "sentence": 3,
+      "accept": [
+        "thursday the 23rd",
+        "thursday the twenty third",
+        "thursday the twenty-third",
+        "thursday 23rd",
+        "thursday 23"
+      ]
+    },
+    {
+      "category": "number",
+      "sentence": 4,
+      "accept": [
+        "1,200",
+        "1200",
+        "one thousand two hundred",
+        "twelve hundred"
+      ]
+    },
+    {
+      "category": "date",
+      "sentence": 4,
+      "accept": [
+        "4th of march",
+        "fourth of march",
+        "march 4",
+        "march 4th",
+        "4 march"
+      ]
+    },
+    {
+      "category": "negation",
+      "sentence": 5,
+      "accept": [
+        "don't think we should sign",
+        "do not think we should sign"
+      ]
+    },
+    {
+      "category": "negation",
+      "sentence": 5,
+      "accept": [
+        "certain we shouldn't",
+        "certain we should not"
+      ]
+    },
+    {
+      "category": "number",
+      "sentence": 6,
+      "accept": [
+        "0755",
+        "0 7 5 5",
+        "zero seven five five",
+        "07 55"
+      ]
+    },
+    {
+      "category": "number",
+      "sentence": 6,
+      "accept": [
+        "121 334",
+        "121334",
+        "one two one three three four",
+        "1 2 1 3 3 4"
+      ]
+    },
+    {
+      "category": "negation",
+      "sentence": 7,
+      "accept": [
+        "never agreed to a discount"
+      ]
+    },
+    {
+      "category": "correction",
+      "sentence": 8,
+      "accept": [
+        "tuesday not thursday",
+        "tuesday, not thursday"
+      ]
+    },
+    {
+      "category": "date",
+      "sentence": 8,
+      "accept": [
+        "the 15th",
+        "the fifteenth",
+        "15th",
+        "fifteenth"
+      ]
+    },
+    {
+      "category": "name",
+      "accept": [
+        "muller and sons",
+        "müller and sons",
+        "mueller and sons"
+      ],
+      "sentence": 9
+    },
+    {
+      "category": "date",
+      "accept": [
+        "13th of september",
+        "thirteenth of september",
+        "september 13",
+        "september 13th",
+        "13 september"
+      ],
+      "sentence": 9
+    },
+    {
+      "category": "date",
+      "accept": [
+        "2026",
+        "two thousand twenty six",
+        "two thousand and twenty six",
+        "twenty twenty six"
+      ],
+      "sentence": 9
+    },
+    {
+      "category": "negation",
+      "sentence": 10,
+      "accept": [
+        "isn't finished",
+        "is not finished"
+      ]
+    },
+    {
+      "category": "name",
+      "sentence": 11,
+      "accept": [
+        "priya raghunathan"
+      ]
+    },
+    {
+      "category": "name",
+      "sentence": 11,
+      "accept": [
+        "tomas oliveira",
+        "tomás oliveira"
+      ]
+    },
+    {
+      "category": "number",
+      "sentence": 12,
+      "accept": [
+        "minus 4 degrees",
+        "minus four degrees",
+        "-4 degrees",
+        "4 degrees below"
+      ]
+    },
+    {
+      "category": "number",
+      "sentence": 12,
+      "accept": [
+        "three nights",
+        "3 nights"
+      ]
+    },
+    {
+      "category": "number",
+      "sentence": 13,
+      "accept": [
+        "45%",
+        "45 percent",
+        "forty five percent",
+        "forty-five percent"
+      ]
+    },
+    {
+      "category": "number",
+      "sentence": 13,
+      "accept": [
+        "40",
+        "forty"
+      ]
+    },
+    {
+      "category": "negation",
+      "sentence": 14,
+      "accept": [
+        "can't make it before noon",
+        "cannot make it before noon",
+        "can not make it before noon"
+      ]
+    },
+    {
+      "category": "date",
+      "sentence": 15,
+      "accept": [
+        "6:55",
+        "six fifty five",
+        "six fifty-five",
+        "6 55"
+      ]
+    },
+    {
+      "category": "name",
+      "sentence": 15,
+      "accept": [
+        "gate b12",
+        "gate b 12",
+        "gate b twelve"
+      ]
+    },
+    {
+      "category": "negation",
+      "sentence": 16,
+      "accept": [
+        "hasn't moved",
+        "has not moved"
+      ]
+    },
+    {
+      "category": "date",
+      "sentence": 16,
+      "accept": [
+        "1st of december",
+        "first of december",
+        "december 1",
+        "december 1st",
+        "december first"
+      ]
+    },
+    {
+      "category": "number",
+      "sentence": 17,
+      "accept": [
+        "3.4.1",
+        "three point four point one"
+      ]
+    },
+    {
+      "category": "number",
+      "sentence": 17,
+      "accept": [
+        "3.3",
+        "three point three"
+      ]
+    },
+    {
+      "category": "number",
+      "sentence": 18,
+      "accept": [
+        "eleven open issues",
+        "11 open issues"
+      ]
+    },
+    {
+      "category": "number",
+      "sentence": 18,
+      "accept": [
+        "only two are blockers",
+        "only 2 are blockers"
+      ]
+    },
+    {
+      "category": "negation",
+      "sentence": 19,
+      "accept": [
+        "don't ship anything",
+        "do not ship anything"
+      ]
+    },
+    {
+      "category": "name",
+      "sentence": 19,
+      "accept": [
+        "keiko nakamura"
+      ]
+    },
+    {
+      "category": "date",
+      "sentence": 20,
+      "accept": [
+        "11:15",
+        "eleven fifteen",
+        "11 15"
+      ]
+    },
+    {
+      "category": "number",
+      "sentence": 20,
+      "accept": [
+        "eight of the twelve",
+        "8 of the 12"
+      ]
+    },
+    {
+      "category": "number",
+      "sentence": 21,
+      "accept": [
+        "twelve dollars",
+        "$12",
+        "12 dollars"
+      ]
+    },
+    {
+      "category": "number",
+      "sentence": 21,
+      "accept": [
+        "below ten",
+        "below 10"
+      ]
+    },
+    {
+      "category": "correction",
+      "sentence": 22,
+      "accept": [
+        "lisbon not lisburn",
+        "lisbon, not lisburn"
+      ]
+    },
+    {
+      "category": "name",
+      "sentence": 23,
+      "accept": [
+        "mexico city"
+      ]
+    },
+    {
+      "category": "name",
+      "sentence": 23,
+      "accept": [
+        "sao paulo",
+        "são paulo"
+      ]
+    },
+    {
+      "category": "name",
+      "sentence": 23,
+      "accept": [
+        "dublin"
+      ]
+    },
+    {
+      "category": "correction",
+      "sentence": 24,
+      "accept": [
+        "206 not 216",
+        "206, not 216",
+        "two hundred and six not two hundred and sixteen",
+        "two hundred and six, not two hundred and sixteen",
+        "two hundred six not two hundred sixteen"
+      ]
+    },
+    {
+      "category": "correction",
+      "sentence": 25,
+      "accept": [
+        "probably friday",
+        "probably friday, possibly monday"
+      ]
+    }
+  ],
+  "asRead": "sentences 9 follow gold/en/as-read.json (what the speaker said), agreed before scoring"
 }
