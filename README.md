@@ -8,7 +8,7 @@ Product brief: [PRD](../NeroNook/docs/TRANSLATE-PRD.md) · [handoff](../NeroNook
 
 | Milestone | State |
 | --- | --- |
-| 0 · Plan and decisions | Delivered October 19, 2026. D‑1 to D‑14 decided except D‑4/D‑5 (recognition, translation), which wait for the engine comparison. |
+| 0 · Plan and decisions | Delivered October 19, 2026. D‑1 to D‑14 decided; D‑4/D‑5 taken October 20 from the first comparison receipts: Apple recognition and translation by default, an optional in-app Qwen recognition pack. |
 | 1a · Workspace skeleton and `TranslateCore` | Delivered October 20, 2026, independently reviewed; 55 tests pass. [Receipt](reports/m1a-workspace-skeleton-2026-10-20/README.md). |
 | 1b · `TranslateEngine` with one model and three voices | Delivered October 20, 2026, independently reviewed: 100 overlapped stress rounds with 0 errors and no audio after any cancel, switch overhead ≈0 ms, first audio ≈150 ms, RTF 0.29. [Receipt](reports/m1b-engine-2026-10-20/README.md). |
 | 1c · Engine comparison | Harness built October 20, 2026 and smoke-tested on the synthetic fixtures with every candidate: Nemotron, Qwen3‑ASR 0.6B/1.7B, Apple speech; Apple Translation, Qwen3.5‑2B, Hy‑MT2; paced, under‑load and listening‑set modes; independently reviewed, 86 tests pass. Waiting on the owner's recordings and the Spanish variety (items 1–5 of [the plan](docs/M1C-PLAN.md)). [Receipt](reports/m1c-engine-comparison-2026-10-20/README.md). |

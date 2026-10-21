@@ -4,6 +4,10 @@
 
 This receipt covers the harness and the approved acquisitions. **Nothing is scored yet**: every number below comes from the three synthetic `say` clips under `Fixtures/Voices` and only shows that each path runs. D‑4 and D‑5 are decided from the recorded corpus (plan §6.1), which waits on the owner (items 1–5, 10 and 11 of `docs/M1C-PLAN.md`).
 
+## Decision taken from the first scripted receipts (October 20, evening)
+
+On the owner's re-recorded scripted English take (25 sentences, one speaker): Apple SpeechTranscriber 9.5% token error rate (9.7% on the call-codec copy), 41% of names; Qwen3‑ASR 1.7B with a names list 6.4% (7.0%), 91%; Qwen 1.7B without 7.2%, 0.6B 8.6–8.9%, Nemotron 10.3%; numbers 88–94% and dates 67–78% for everyone (two shared misses). The owner's call: **Apple by default, with an optional in-app Qwen3‑ASR 1.7B pack**, and Apple Translation by default with the Qwen text model joining the pack only if the review sheets favour it (plan §8, D‑4/D‑5). The comparison continues to characterize both paths; the pack's in-app wording waits for Apple's own names list to be measured.
+
 ## What exists now
 
 - `Engine/` builds a second helper, **`TranslateASR`** (Nemotron 3.5 streaming sessions, Qwen3‑ASR phrase mode with an optional `context` name list, Qwen3‑ForcedAligner), and **`TranslateEngine`** gained `loadTranslator`/`translate` for a Qwen text model next to the TTS model. Both share `EngineProtocol` (the frame codec) and the client's sandbox. `docs/PROTOCOL.md` documents both.

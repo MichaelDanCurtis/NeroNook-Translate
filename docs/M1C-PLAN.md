@@ -1,8 +1,10 @@
 # Milestone 1c · engine comparison plan
 
-**October 20, 2026 · planning only.** This runs the protocol in [ARCHITECTURE-PLAN.md §6.1](ARCHITECTURE-PLAN.md#61-engine-comparison-protocol-m1c) and decides D‑4 (recognition) and D‑5 (translation). Nothing here downloads, records or installs anything; every such step is an owner approval listed below.
+**October 20, 2026 · planning only.** This runs the protocol in [ARCHITECTURE-PLAN.md §6.1](ARCHITECTURE-PLAN.md#61-engine-comparison-protocol-m1c). D‑4 (recognition) and D‑5 (translation) were taken on October 20 from its first scripted receipts (Apple by default, an optional Qwen recognition pack); the rest of the comparison is the evidence behind that option and its in-app description. Nothing here downloads, records or installs anything; every such step is an owner approval listed below.
 
 ## Status, October 20 (evening)
+
+- **Decision taken (D‑4, D‑5):** Apple SpeechTranscriber and Apple Translation by default; an optional in-app pack with Qwen3‑ASR 1.7B for users who want better names and numbers; the Qwen text model joins the pack only if the review sheets favour it. Basis: the owner's scripted English take (Apple 9.5% / names 41%; Qwen 1.7B with a names list 6.4% / 91%). Still to measure before the pack's description is written: Apple with its own names list, the natural take, Spanish, and the translation review sheets.
 
 - **Approved and done (items 6–9):** the five pinned downloads, the Mandarin Apple speech asset, the Nemotron and bf16 imports, and Hy‑MT2 through Voice's interpreter environment (read-only). Hashes and receipts are in `PROVENANCE.md` and `reports/m1c-engine-comparison-2026-10-20/`. The Spanish Apple asset waits on item 1 (variety).
 - **Harness built, independently reviewed and smoke-tested** on the synthetic fixtures with every candidate and mode; see the receipt. Every pass records CPU time and footprint per process, MLX counters and GPU utilization (no privileges); energy and thermal behaviour still need `powermetrics` (root) and wait for Milestone 3. Three things it taught: Qwen3‑ASR and the aligner need a one-time `--prepare-model` run (the runtime writes `tokenizer.json` into the model folder, which the sandbox then keeps read-only); Apple Translation reports installed packs as `supported` to any binary that SwiftPM's build system stamps with the deployment target as SDK, fixed with an explicit linker platform version; the Qwen3.5‑2B checkpoint is multimodal and its text model loads alone.
@@ -34,7 +36,7 @@
 7. Approve the Apple speech asset downloads for Spanish and Mandarin.
 8. Approve imports from Voice's model folder and the Hugging Face cache (Nemotron 3.5; the bf16 TTS variant if complete).
 9. Approve read‑only use of Voice's interpreter environment to run Hy‑MT2.
-10. Confirm or amend the §6.1 pass bars before scoring.
+10. Confirm or amend the §6.1 pass bars before scoring. With D‑4/D‑5 taken, the bars describe the two shipped paths rather than gate a choice; the names and dates bars are out of reach on the current take for every engine (two shared misses), which the receipt says.
 11. Listeners for the TTS‑variant part: one or two people who know the owner's voice, plus the Spanish and Mandarin speakers for pronunciation.
 
 ## Recording how‑to (per speaker, about 10 minutes)
@@ -80,7 +82,7 @@ It derives the scripted gold, installs the Apple speech asset for the chosen Spa
 3. ~~Downloads and imports on approval; hashes into `PROVENANCE.md`.~~ Done October 20.
 4. Recordings arrive; `scripts/run-m1c.sh <variety>` makes codec copies and transcript drafts; speakers correct the drafts; run again.
 5. Comparison runs: EN↔ES first (both directions), then TTS variants, then EN↔ZH when the Mandarin set exists. Receipts under `reports/m1c-…`.
-6. D‑4 and D‑5 decided from the receipts; Milestone 1d opens.
+6. ~~D‑4 and D‑5 decided from the receipts~~ (taken October 20; the receipts now describe the pack); Milestone 1d opens.
 
 ## Exit (from the plan)
 
