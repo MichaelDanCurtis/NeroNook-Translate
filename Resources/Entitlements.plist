@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Entitlements for Translate.app, applied by scripts/package.py with the hardened runtime.
+     Only the microphone entitlement is needed: the helpers (TranslateEngine, TranslateASR) receive audio over
+     pipes and are signed without entitlements. scripts/package.py refuses any other key, so adding one is a
+     deliberate change to both files. -->
+<plist version="1.0">
+<dict>
+	<key>com.apple.security.device.audio-input</key>
+	<true/>
+</dict>
+</plist>

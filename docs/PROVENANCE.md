@@ -28,6 +28,12 @@ None yet. Each future copy records: destination path, origin path, origin commit
 | `Sources/TranslateEngineClient/ModelRecipe.swift` | `NeroNook-Voice/Sources/VoiceAudio/QwenModel.swift` | Verify at import and on demand, not on every start |
 | `Driver/Sources/TimedRing.hpp`, `Driver/Vendor/libASPL/` | `NeroNook-Voice/Drivers/NeroInterpreterAudio/` | New identities; owner-token lease; feeder→microphone and optional speaker→return rings |
 
+## Modelled on, not copied
+
+| Translate file | Modelled on | What was taken |
+| --- | --- | --- |
+| `Sources/TranslateApp/TranslatePlugin.swift` (`TranslatePlugin`, `PluginOutput`) | `NeroNook-Voice/Sources/ModuleApp/ModuleApp.swift`, `VoiceOutput.swift` (read October 20, 2026) | The application-plugin pattern: accessory activation, loopback channel started eagerly, hello → ready at sequence 0, strictly increasing sequences, a 2 s heartbeat that stops after 30 s without a main-thread publish, a stdio `--protocol-test` path. Written fresh for Translate; no lines copied. |
+
 ## Models
 
 Not bundled. Recipes under `Resources/Models/` pin repository, revision and per-file SHA-256; acquisition is by download on Prepare or by hash-verified import from a user-chosen folder (owner decision D‑7). `scripts/import-model.py` performs the import: APFS clone of every recipe file, then size and SHA-256 verification, into `~/Library/Application Support/NeroNookPlugins/cafe.nero.plugin.translate/Models/<repository tail>-<revision>/`.

@@ -13,6 +13,7 @@ Product brief: [PRD](../NeroNook/docs/TRANSLATE-PRD.md) · [handoff](../NeroNook
 | 1b · `TranslateEngine` with one model and three voices | Delivered October 20, 2026, independently reviewed: 100 overlapped stress rounds with 0 errors and no audio after any cancel, switch overhead ≈0 ms, first audio ≈150 ms, RTF 0.29. [Receipt](reports/m1b-engine-2026-10-20/README.md). |
 | 1c · Engine comparison | Harness built October 20, 2026 and smoke-tested on the synthetic fixtures with every candidate: Nemotron, Qwen3‑ASR 0.6B/1.7B, Apple speech; Apple Translation, Qwen3.5‑2B, Hy‑MT2; paced, under‑load and listening‑set modes; independently reviewed, 86 tests pass. Waiting on the owner's recordings and the Spanish variety (items 1–5 of [the plan](docs/M1C-PLAN.md)). [Receipt](reports/m1c-engine-comparison-2026-10-20/README.md). |
 | 1d · Voice experiments | Not started. |
+| 2a · The plugin app and the self-test loop | Built October 20, 2026 (late evening): `TranslateApp` with the host channel, snapshots and heartbeat; the session window; microphone → Apple recognition → Apple translation → Qwen TTS in your voice → speakers. Verified headless on the owner's reference take, the protocol test and a direct launch; the microphone loop and a hosted install wait for the owner. [Receipt](reports/m2a-app-2026-10-20/README.md). |
 | 2–5 · Audio routing, live calls, saved meeting, notes and packaging | Not started. |
 
 Nothing is installed and nothing captures audio. The models under `~/Library/Application Support/NeroNookPlugins/cafe.nero.plugin.translate/Models` arrived by owner approval and are listed with their hashes in `docs/PROVENANCE.md`.
@@ -27,6 +28,9 @@ Sources/TranslateCore/   Versioned session schema, append-only journal, revision
                          caption window, evidence items and per-item staleness
 Sources/TranslateEngineClient/  Helper protocol clients: process supervision, framing, audio decoding (engine and recognizer)
 Sources/TranslateCompare/  Milestone 1c comparison: corpus, scoring, candidate adapters, paced runs, load, receipts, listening set
+Sources/TranslateAudio/  Microphone capture, playback, device lists (AVFoundation, CoreAudio)
+Sources/TranslateLive/   The live pipeline: Apple recognition stream, Apple translation, synthesis queue, session state
+Sources/TranslateApp/    The plugin application: host channel, hello/ready, snapshots, heartbeat, the session window
 Sources/TranslateCheck/  Host-free checks: manifest validation, journal replay, engine receipts, --compare, --listening-set
 Engine/                  Separate MLX helper package → TranslateEngine (Qwen TTS + Qwen text translator) and TranslateASR
 Fixtures/                Journal sample; synthetic reference clips; corpus scripts and gold text (recordings stay out of git)
@@ -90,5 +94,13 @@ The TTS listening set, one engine per variant, blinded clips with the key under 
 ```bash
 .build/debug/TranslateCheck --listening-set --engine Engine/.build/release/TranslateEngine --voices Fixtures/Voices --variants base-1.7b-8bit,base-1.7b-bf16,base-0.6b-8bit --intervals 0.32,0.16 --asr-helper Engine/.build/release/TranslateASR --out .build/listening
 ```
+
+### The app
+
+```bash
+swift build && .build/debug/TranslateApp
+```
+
+Run directly, the session window opens at once (development; the embedded Info.plist carries the microphone and speech-recognition usage descriptions). Pick the microphone, choose a 3–30 s reference clip with its exact words, press Start, speak: captions appear, the translation follows, and with "Hear the translation" on you hear yourself in the other language. The engine is found at `Engine/.build/release/TranslateEngine` next to the package, and the Qwen Base model under the plugin's `Models` folder. Under the host (`--neronook-plugin`), the app runs as an accessory with no window until the host's action opens one; `python3 -I scripts/protocol-test.py` exercises that path over stdio, and `python3 -I scripts/package.py` stages and signs `Translate.app` without installing it.
 
 Requires macOS 26 and a Swift 6 toolchain on Apple silicon. `TranslateCheck` is linked with an explicit `-platform_version` (Package.swift) because SwiftPM 6.4's build system otherwise stamps the deployment target as the SDK version and Apple Translation then reports installed language packs as not installed; any executable of this plugin that uses Translation needs the same until SwiftPM fixes it. The package uses the Swift 5 language mode, like the other NeroNook plugins; strict concurrency checking is not on yet. `doctor` verifies the vendored SDK hashes; the drift check for copied Voice code arrives with the first such copy.

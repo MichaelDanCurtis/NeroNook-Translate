@@ -1,0 +1,13 @@
+self-test: 6 phrase(s) from reference.wav in 19.5 s; Engine stopped
+  Thanks for joining.
+    → Gracias por unirte.
+  This is Michael Curtis on the line, and I think that Anna Beltran is dialing in from Seville.
+    → Soy Michael Curtis en la línea y creo que Anna Beltran está marcando desde Sevilla.
+  We raised 1500000 last quarter, not one.
+    → Recaudamos 1500000 el último trimestre, no uno.
+  2.
+    → 2.
+  So the forecast needs to change.
+    → Así que el pronóstico necesita cambiar.
+  Let's meet at 1030 on Thursday, the 23rd, unless it's too early for you.
+    → Nos vemos a las 10:30 el jueves 23, a menos que sea demasiado temprano para ti.

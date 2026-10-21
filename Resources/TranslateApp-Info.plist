@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleIdentifier</key>
+	<string>cafe.nero.plugin.translate</string>
+	<key>CFBundleName</key>
+	<string>Translate</string>
+	<key>CFBundleExecutable</key>
+	<string>TranslateApp</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.1.0</string>
+	<key>CFBundleVersion</key>
+	<string>0.1.0</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>26.0</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Translate listens to your microphone during a call so your words can be recognized and spoken in the other language.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Translate recognizes speech on this Mac to show captions and translate them.</string>
+</dict>
+</plist>
