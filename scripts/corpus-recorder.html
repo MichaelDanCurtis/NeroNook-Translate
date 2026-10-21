@@ -51,7 +51,7 @@
 
   <section class="card" data-task="scripted">
     <h2><span>1 · Scripted sentences</span><span class="status" id="scripted-count"></span></h2>
-    <p class="hint">Read the sentence on screen once, pause briefly, then press <kbd>space</kbd> or Next. One recording for all sentences; stop after the last one.</p>
+    <p class="hint">Read the sentence on screen once, pause briefly, then press <kbd>space</kbd> or Next. One recording for all sentences; after the last one the recording stops by itself. Read only the numbered sentence, never the small print.</p>
     <div class="prompter" id="scripted-text">Press Record to start.</div>
     <div class="row">
       <button class="rec" data-action="record">Record</button>
@@ -201,7 +201,11 @@
         text.innerHTML = '';
         text.appendChild(document.createTextNode(sentences[this.index]));
         const small = document.createElement('small'); small.textContent = (this.index + 1) + ' / ' + sentences.length; text.appendChild(small);
-      } else { text.textContent = 'That was the last sentence. Press Stop.'; this.buttons.next.disabled = true; }
+      } else {
+        // Nothing readable here: the previous take picked up the closing message being read aloud. Stop after a short pause.
+        text.innerHTML = '<small>✓ last sentence done, stopping…</small>'; this.buttons.next.disabled = true;
+        setTimeout(() => { if (active === this) this.stop(); }, 1500);
+      }
     }
     next() { if (active !== this) return; this.index += 1; this.show(); }
     async stop() {

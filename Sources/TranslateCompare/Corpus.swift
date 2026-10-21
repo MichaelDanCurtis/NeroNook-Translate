@@ -35,6 +35,7 @@ public enum CorpusLoader {
                     let url = folder.appendingPathComponent(name)
                     guard audioExtensions.contains(url.pathExtension.lowercased()) else { continue }
                     let base = url.deletingPathExtension().lastPathComponent
+                    guard !base.hasPrefix("reference") else { continue }   // a reference take is a listening-set voice, not a corpus item
                     let gold = root.appendingPathComponent("gold/\(language)")
                     guard let reference = try? String(contentsOf: gold.appendingPathComponent(base + ".txt"), encoding: .utf8) else {
                         FileHandle.standardError.write(Data("skipping \(subfolder)/\(language)/\(name): no gold/\(language)/\(base).txt\n".utf8)); continue

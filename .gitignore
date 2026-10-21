@@ -17,3 +17,9 @@ Fixtures/Corpus/codec/
 **/private/
 reports/**/*.wav
 Fixtures/Voices-owner/
+# Natural-speech transcripts and drafts are personal speech: never committed by default (git add -f if the speaker agrees)
+Fixtures/Corpus/gold/*/natural-*
+Fixtures/Corpus/gold/*/*.draft.txt
+Fixtures/Corpus/gold/*/reference.txt
+# Run folders hold transcripts of natural speech; curated numbers go into the receipt README by hand
+reports/**/run/

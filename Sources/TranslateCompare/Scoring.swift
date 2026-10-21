@@ -78,6 +78,12 @@ public enum Normalizer {
         func unit(_ t: String) -> Int? { grammar.units[t] }
         while i < tokens.count {
             let t = tokens[i]
+            // A digit number before a scale word ("1.5 million", "2 thousand") folds to the same figure as the spoken form.
+            if let numeric = Double(t), t.first?.isNumber == true, i + 1 < tokens.count, let scale = grammar.scales[tokens[i + 1]] {
+                let product = numeric * Double(scale)
+                result.append(product == product.rounded() ? String(Int(product)) : String(product))
+                i += 2; continue
+            }
             if let ordinal = grammar.ordinals[t] {
                 // "twenty third" → 23rd; a bare ordinal keeps its own number
                 if let last = result.last, let tens = Int(last), tens % 10 == 0, tens >= 20, tens < 100, ordinal < 10, i > 0, grammar.units[tokens[i - 1]] == tens {
@@ -120,7 +126,14 @@ public enum Normalizer {
             if j < tokens.count, tokens[j] == grammar.point {
                 var k = j + 1, decimals = ""
                 while k < tokens.count, let d = unit(tokens[k]), d < 10 { decimals += String(d); k += 1 }
-                if !decimals.isEmpty { value += "." + decimals; j = k }
+                if !decimals.isEmpty {
+                    value += "." + decimals; j = k
+                    // "one point five million" is 1500000, the form an engine that writes digits produces.
+                    if j < tokens.count, let scale = grammar.scales[tokens[j]], let decimal = Double(value) {
+                        let product = decimal * Double(scale)
+                        value = product == product.rounded() ? String(Int(product)) : String(product); j += 1
+                    }
+                }
             }
             result.append(value)
             i = j

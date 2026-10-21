@@ -146,7 +146,8 @@ enum CompareCommand {
             case "apple":
                 let locales = ["en": "en-US", "es": spanishLocale, "zh": "zh-CN"]
                 recognizers.append(AppleRecognizer(locales: locales))
-                if paced { pacedRecognizers.append(ApplePaced(locales: locales)) }
+                recognizers.append(AppleRecognizer(locales: locales, useContext: true))
+                if paced { pacedRecognizers.append(ApplePaced(locales: locales)); pacedRecognizers.append(ApplePaced(locales: locales, useContext: true)) }
             default: throw TranslateCheckProblem("Unknown recognizer \(name)")
             }
         }

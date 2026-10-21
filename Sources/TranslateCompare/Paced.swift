@@ -217,11 +217,15 @@ public struct PhraseModePaced: PacedRecognizer {
 /// prepared and started before the clock runs, as the other engines' sessions are.
 public struct ApplePaced: PacedRecognizer {
     public static let options = "reporting: volatileResults; one analyzer per phrase, prepared and started before the clock; 320 ms buffers"
-    public let name = "apple-speech"
+    public let name: String
     public let languages: Set<String>
     public let streaming = true
     let locales: [String: String]
-    public init(locales: [String: String]) { self.locales = locales; self.languages = Set(locales.keys) }
+    let useContext: Bool
+    public init(locales: [String: String], useContext: Bool = false) {
+        self.locales = locales; self.languages = Set(locales.keys); self.useContext = useContext
+        self.name = useContext ? "apple-speech+context" : "apple-speech"
+    }
 
     public func recognizePaced(_ samples: [Float], language: String, context: String?, prefixEvery: Double) async throws -> PhraseOutcome {
         guard let localeID = locales[language] else { throw EngineClientProblem("No Apple locale for \(language).") }
@@ -243,6 +247,7 @@ public struct ApplePaced: PacedRecognizer {
             return (finals, partialAt, lastFinalAt)
         }
         do {
+            if useContext, let analysis = AppleRecognizer.analysisContext(context) { try await analyzer.setContext(analysis) }
             try await analyzer.prepareToAnalyze(in: target)
             try await analyzer.start(inputSequence: input)
         } catch {

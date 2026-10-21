@@ -57,18 +57,31 @@ public struct HelperRecognizer: Recognizer {
     public func residentBytes() async -> UInt64? { (try? await client.stats())?.residentBytes }
 }
 
-/// Apple SpeechAnalyzer with SpeechTranscriber, file input, final results only.
+/// Apple SpeechAnalyzer with SpeechTranscriber, file input, final results only. With `useContext`, the
+/// names list goes in as the analyzer's contextual strings, Apple's counterpart of Qwen's `context`.
 public struct AppleRecognizer: Recognizer {
-    public let name = "apple-speech"
+    public let name: String
     public let languages: Set<String>
     let locales: [String: String]
-    public init(locales: [String: String]) { self.locales = locales; self.languages = Set(locales.keys) }
+    let useContext: Bool
+    public init(locales: [String: String], useContext: Bool = false) {
+        self.locales = locales; self.languages = Set(locales.keys); self.useContext = useContext
+        self.name = useContext ? "apple-speech+context" : "apple-speech"
+    }
+
+    static func analysisContext(_ names: String?) -> AnalysisContext? {
+        guard let names, !names.isEmpty else { return nil }
+        let context = AnalysisContext()
+        context.contextualStrings[.general] = names.split(separator: ",").map { $0.trimmingCharacters(in: .whitespaces) }.filter { !$0.isEmpty }
+        return context
+    }
 
     public func recognize(_ item: CorpusItem, context: String?) async throws -> RecognizedText {
         guard let localeID = locales[item.language] else { throw EngineClientProblem("No Apple locale for \(item.language).") }
         let transcriber = SpeechTranscriber(locale: Locale(identifier: localeID), preset: .transcription)
         let status = await AssetInventory.status(forModules: [transcriber])
         let analyzer = SpeechAnalyzer(modules: [transcriber])
+        if useContext, let analysis = Self.analysisContext(context) { try await analyzer.setContext(analysis) }
         let file = try AVAudioFile(forReading: item.audio)
         let started = ProcessInfo.processInfo.systemUptime
         let collector = Task { () throws -> [String] in

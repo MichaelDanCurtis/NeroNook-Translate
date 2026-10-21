@@ -46,6 +46,7 @@ final class ScoringTests: XCTestCase {
             ("ten thirty", "10:30", "en"), ("ten thirty", "1030", "en"), ("zero seven five five", "0755", "en"), ("nineteen eighty", "1980", "en"),
             ("twenty-third", "23rd", "en"), ("forty-five percent", "45%", "en"), ("twelve dollars", "$12", "en"), ("minus four degrees", "-4 degrees", "en"),
             ("two hundred and five", "205", "en"), ("fourteen thousand", "14,000", "en"), ("three point five", "3.5", "en"), ("eleven fifteen", "11 15", "en"),
+            ("one point five million", "1500000", "en"), ("one point five million", "1.5 million", "en"), ("two point five thousand", "2500", "en"), ("dos punto cinco millones", "2500000", "es"),
             ("cuarenta y cinco por ciento", "45%", "es"), ("doscientos cinco", "205", "es"), ("las diez treinta", "las 10:30", "es"), ("doce dólares", "$12", "es"),
             ("十点半", "10点半", "zh"), ("一万四千", "14000", "zh"), ("三月十二日", "3月12日", "zh"), ("一二一", "121", "zh"), ("二百零五", "205", "zh"),
         ]
