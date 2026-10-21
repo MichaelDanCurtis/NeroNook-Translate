@@ -39,7 +39,15 @@
 
 ## Recording how‑to (per speaker, about 10 minutes)
 
-QuickTime Player → File → New Audio Recording, quality Maximum, the Komplete Audio 6 or the MacBook microphone, no headphones needed, a quiet room. Save the files under `Fixtures/Corpus/raw/<language>/` (git ignores them; recordings never enter the repository). Any format QuickTime writes is fine (`.m4a`); the names matter:
+The easy way is the local recorder page: it shows each script as a teleprompter, records from the microphone you choose with echo cancellation, noise suppression and automatic gain switched off, lets you listen back, and saves 16‑bit WAV straight into the right folder. Nothing leaves the Mac.
+
+```bash
+python3 -I scripts/corpus-recorder.py
+```
+
+Then open <http://127.0.0.1:8765> in Safari or Chrome, allow the microphone, pick the language and the Komplete Audio 6 (or the MacBook microphone), and record the three takes below. A quiet room, your usual pace, no headphones needed.
+
+QuickTime Player works too (File → New Audio Recording, quality Maximum): save the files under `Fixtures/Corpus/raw/<language>/` (git ignores them; recordings never enter the repository). Any format QuickTime writes is fine (`.m4a`); the names matter:
 
 | File | What to record |
 | --- | --- |

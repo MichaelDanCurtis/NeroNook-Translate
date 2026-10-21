@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Corpus recorder</title>
+<style>
+  :root { color-scheme: light dark; --bg: #f6f6f4; --card: #ffffff; --ink: #1d1d1b; --muted: #6b6b66; --line: #dcdcd7; --accent: #1f6feb; --rec: #d1242f; --ok: #1a7f37; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #15151a; --card: #1f1f26; --ink: #ececea; --muted: #9a9a94; --line: #34343c; --accent: #4c8dff; --rec: #ff5d6c; --ok: #3fb950; } }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.45 -apple-system, "SF Pro Text", system-ui, sans-serif; }
+  main { max-width: 900px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  .sub { color: var(--muted); margin: 0 0 20px; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; }
+  select, button { font: inherit; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--ink); }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button.rec { background: var(--rec); border-color: var(--rec); color: #fff; }
+  button:disabled { opacity: .45; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
+  .card h2 { font-size: 17px; margin: 0 0 6px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .hint { color: var(--muted); font-size: 14px; margin: 0 0 12px; }
+  .prompter { font-size: 26px; line-height: 1.35; min-height: 3.2em; padding: 12px 0; }
+  .prompter small { display: block; font-size: 14px; color: var(--muted); margin-top: 8px; }
+  ul.prompts { margin: 0 0 12px; padding-left: 20px; }
+  .meter { height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; margin: 8px 0; }
+  .meter i { display: block; height: 100%; width: 0; background: var(--ok); transition: width .08s; }
+  .status { font-size: 14px; color: var(--muted); }
+  .status b { color: var(--ink); }
+  .saved { color: var(--ok); }
+  .warn { color: var(--rec); }
+  audio { width: 100%; margin-top: 8px; }
+  .files { font-size: 14px; }
+  .files span { display: inline-block; margin-right: 14px; }
+  kbd { font: 12px ui-monospace, monospace; padding: 1px 5px; border: 1px solid var(--line); border-radius: 4px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Corpus recorder</h1>
+  <p class="sub">Three takes per speaker, saved as WAV straight into <code id="corpusPath">Fixtures/Corpus/raw/…</code>. Quiet room, your usual pace, no headphones needed. A slip is fine: carry on, never restart.</p>
+
+  <div class="row">
+    <label>Language <select id="lang"></select></label>
+    <label>Microphone <select id="device"><option value="">Allow the microphone first…</option></select></label>
+    <button id="enable" class="primary">Allow microphone</button>
+    <span id="micInfo" class="status"></span>
+  </div>
+
+  <div class="card files" id="files"></div>
+
+  <section class="card" data-task="scripted">
+    <h2><span>1 · Scripted sentences</span><span class="status" id="scripted-count"></span></h2>
+    <p class="hint">Read the sentence on screen once, pause briefly, then press <kbd>space</kbd> or Next. One recording for all sentences; stop after the last one.</p>
+    <div class="prompter" id="scripted-text">Press Record to start.</div>
+    <div class="row">
+      <button class="rec" data-action="record">Record</button>
+      <button data-action="next" disabled>Next sentence</button>
+      <button data-action="stop" disabled>Stop</button>
+      <span class="status" data-role="time"></span>
+    </div>
+    <div class="meter"><i></i></div>
+    <div data-role="result"></div>
+  </section>
+
+  <section class="card" data-task="natural-1">
+    <h2><span>2 · Natural speech</span><span class="status">about four minutes</span></h2>
+    <p class="hint">Talk freely about one or more of these. Real names, dates and numbers help. Stop whenever you like after three minutes; under ten.</p>
+    <ul class="prompts" id="prompts"></ul>
+    <div class="row">
+      <button class="rec" data-action="record">Record</button>
+      <button data-action="stop" disabled>Stop</button>
+      <span class="status" data-role="time"></span>
+    </div>
+    <div class="meter"><i></i></div>
+    <div data-role="result"></div>
+  </section>
+
+  <section class="card" data-task="reference">
+    <h2><span>3 · Reference take</span><span class="status">10 to 20 seconds</span></h2>
+    <p class="hint">Read these three sentences as one take. This becomes your reference voice for the listening set.</p>
+    <div class="prompter" id="reference-text"></div>
+    <div class="row">
+      <button class="rec" data-action="record">Record</button>
+      <button data-action="stop" disabled>Stop</button>
+      <span class="status" data-role="time"></span>
+    </div>
+    <div class="meter"><i></i></div>
+    <div data-role="result"></div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const $ = (q, el = document) => el.querySelector(q);
+  let state = null, stream = null, active = null;
+
+  async function loadState() {
+    state = await (await fetch('/api/state')).json();
+    $('#corpusPath').textContent = state.corpus + '/raw/<language>/';
+    const select = $('#lang');
+    if (!select.options.length) {
+      for (const code of Object.keys(state.languages)) {
+        const option = document.createElement('option');
+        option.value = code; option.textContent = state.languages[code].title + ' (' + code + ')';
+        select.appendChild(option);
+      }
+      select.addEventListener('change', render);
+    }
+    render();
+  }
+
+  function language() { return state.languages[$('#lang').value]; }
+
+  function render() {
+    const lang = language();
+    $('#scripted-count').textContent = lang.sentences.length + ' sentences';
+    $('#reference-text').textContent = lang.sentences.slice(0, 3).join(' ');
+    const prompts = $('#prompts'); prompts.innerHTML = '';
+    for (const p of lang.prompts) { const li = document.createElement('li'); li.textContent = p; prompts.appendChild(li); }
+    const files = $('#files'); files.innerHTML = '<b>Saved for ' + $('#lang').value + ':</b> ';
+    for (const [name, info] of Object.entries(lang.files)) {
+      const span = document.createElement('span');
+      span.textContent = name + ': ' + (info.exists ? (info.seconds ? info.seconds + ' s' : 'present') : '–');
+      span.className = info.exists ? 'saved' : '';
+      files.appendChild(span);
+    }
+  }
+
+  async function enableMicrophone() {
+    try {
+      const probe = await navigator.mediaDevices.getUserMedia({ audio: true });
+      probe.getTracks().forEach(t => t.stop());
+    } catch (e) { $('#micInfo').textContent = 'Microphone refused: ' + e.message; $('#micInfo').className = 'status warn'; return; }
+    const devices = (await navigator.mediaDevices.enumerateDevices()).filter(d => d.kind === 'audioinput');
+    const select = $('#device'); select.innerHTML = '';
+    for (const d of devices) { const o = document.createElement('option'); o.value = d.deviceId; o.textContent = d.label || ('Microphone ' + (select.options.length + 1)); select.appendChild(o); }
+    const preferred = [...select.options].find(o => /komplete/i.test(o.textContent));
+    if (preferred) select.value = preferred.value;
+    $('#micInfo').textContent = devices.length + ' input(s); processing (echo cancellation, noise suppression, gain) is switched off for the recording.';
+    $('#enable').disabled = true;
+  }
+
+  function encodeWAV(chunks, sampleRate) {
+    const length = chunks.reduce((n, c) => n + c.length, 0);
+    const buffer = new ArrayBuffer(44 + length * 2), view = new DataView(buffer);
+    const text = (offset, s) => { for (let i = 0; i < s.length; i++) view.setUint8(offset + i, s.charCodeAt(i)); };
+    text(0, 'RIFF'); view.setUint32(4, 36 + length * 2, true); text(8, 'WAVE'); text(12, 'fmt ');
+    view.setUint32(16, 16, true); view.setUint16(20, 1, true); view.setUint16(22, 1, true); view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * 2, true); view.setUint16(32, 2, true); view.setUint16(34, 16, true); text(36, 'data'); view.setUint32(40, length * 2, true);
+    let offset = 44;
+    for (const chunk of chunks) for (let i = 0; i < chunk.length; i++, offset += 2) {
+      const s = Math.max(-1, Math.min(1, chunk[i]));
+      view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7fff, true);
+    }
+    return new Blob([buffer], { type: 'audio/wav' });
+  }
+
+  class Take {
+    constructor(section) {
+      this.section = section; this.name = section.dataset.task;
+      this.buttons = { record: $('[data-action=record]', section), stop: $('[data-action=stop]', section), next: $('[data-action=next]', section) };
+      this.time = $('[data-role=time]', section); this.meter = $('.meter i', section); this.result = $('[data-role=result]', section);
+      this.buttons.record.addEventListener('click', () => this.start());
+      this.buttons.stop.addEventListener('click', () => this.stop());
+      if (this.buttons.next) this.buttons.next.addEventListener('click', () => this.next());
+    }
+    async start() {
+      if (active) return;
+      if ($('#enable').disabled === false) await enableMicrophone();
+      const deviceId = $('#device').value;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: { deviceId: deviceId ? { exact: deviceId } : undefined, channelCount: 1,
+          echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
+      } catch (e) { this.result.innerHTML = '<span class="warn">Could not open the microphone: ' + e.message + '</span>'; return; }
+      active = this;
+      this.context = new AudioContext();
+      this.chunks = []; this.started = performance.now(); this.index = 0;
+      const source = this.context.createMediaStreamSource(stream);
+      this.processor = this.context.createScriptProcessor(4096, 1, 1);
+      const silent = this.context.createGain(); silent.gain.value = 0;
+      this.processor.onaudioprocess = e => {
+        const data = e.inputBuffer.getChannelData(0);
+        this.chunks.push(new Float32Array(data));
+        let sum = 0; for (let i = 0; i < data.length; i++) sum += data[i] * data[i];
+        const db = 20 * Math.log10(Math.sqrt(sum / data.length) + 1e-9);
+        this.meter.style.width = Math.max(0, Math.min(100, (db + 60) * 100 / 60)) + '%';
+        this.meter.style.background = db > -3 ? 'var(--rec)' : 'var(--ok)';
+      };
+      source.connect(this.processor); this.processor.connect(silent); silent.connect(this.context.destination);
+      this.ticker = setInterval(() => { this.time.textContent = this.clock() + ' · ' + this.context.sampleRate + ' Hz'; }, 250);
+      this.buttons.record.disabled = true; this.buttons.stop.disabled = false;
+      if (this.buttons.next) { this.buttons.next.disabled = false; this.show(); }
+      this.result.innerHTML = '';
+    }
+    clock() { const s = Math.round((performance.now() - this.started) / 1000); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+    show() {
+      const sentences = language().sentences;
+      const text = $('#scripted-text');
+      if (this.index < sentences.length) {
+        text.innerHTML = '';
+        text.appendChild(document.createTextNode(sentences[this.index]));
+        const small = document.createElement('small'); small.textContent = (this.index + 1) + ' / ' + sentences.length; text.appendChild(small);
+      } else { text.textContent = 'That was the last sentence. Press Stop.'; this.buttons.next.disabled = true; }
+    }
+    next() { if (active !== this) return; this.index += 1; this.show(); }
+    async stop() {
+      if (active !== this) return;
+      clearInterval(this.ticker);
+      this.processor.disconnect(); stream.getTracks().forEach(t => t.stop());
+      const sampleRate = this.context.sampleRate; await this.context.close();
+      active = null;
+      this.buttons.record.disabled = false; this.buttons.stop.disabled = true; if (this.buttons.next) this.buttons.next.disabled = true;
+      this.meter.style.width = '0';
+      const blob = encodeWAV(this.chunks, sampleRate);
+      const seconds = this.chunks.reduce((n, c) => n + c.length, 0) / sampleRate;
+      const warn = this.name === 'reference' && (seconds < 10 || seconds > 20) ? ' <span class="warn">(aim for 10 to 20 s; the engine needs 3 to 30 s)</span>'
+                 : this.name === 'natural-1' && seconds > 600 ? ' <span class="warn">(over ten minutes: record it again in two parts)</span>' : '';
+      this.result.innerHTML = '<div class="status"><b>' + seconds.toFixed(1) + ' s</b> recorded at ' + sampleRate + ' Hz' + warn + '</div>';
+      const audio = document.createElement('audio'); audio.controls = true; audio.src = URL.createObjectURL(blob); this.result.appendChild(audio);
+      const row = document.createElement('div'); row.className = 'row';
+      const save = document.createElement('button'); save.className = 'primary'; save.textContent = 'Save as raw/' + $('#lang').value + '/' + this.name + '.wav';
+      const note = document.createElement('span'); note.className = 'status';
+      save.addEventListener('click', async () => { save.disabled = true; note.textContent = 'saving…'; await this.upload(blob, false, note, save); });
+      row.appendChild(save); row.appendChild(note); this.result.appendChild(row);
+    }
+    async upload(blob, overwrite, note, save) {
+      const response = await fetch('/api/upload?lang=' + $('#lang').value + '&name=' + this.name + '&overwrite=' + (overwrite ? 1 : 0), { method: 'POST', body: blob });
+      const reply = await response.json();
+      if (response.status === 409) {
+        if (confirm('raw/' + $('#lang').value + '/' + this.name + '.wav already exists (' + reply.seconds + ' s). Replace it?')) return this.upload(blob, true, note, save);
+        note.textContent = 'kept the existing file'; save.disabled = false; return;
+      }
+      if (!response.ok) { note.innerHTML = '<span class="warn">' + reply.error + '</span>'; save.disabled = false; return; }
+      note.innerHTML = '<span class="saved">saved: ' + reply.path + ' (' + reply.seconds + ' s)</span>';
+      await loadState();
+    }
+  }
+
+  document.querySelectorAll('section[data-task]').forEach(s => new Take(s));
+  $('#enable').addEventListener('click', enableMicrophone);
+  document.addEventListener('keydown', e => {
+    if (!active || !active.buttons.next || e.target.tagName === 'SELECT') return;
+    if (e.code === 'Space' || e.code === 'ArrowRight') { e.preventDefault(); active.next(); }
+  });
+  loadState();
+})();
+</script>
+</body>
+</html>
